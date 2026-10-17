@@ -29,6 +29,7 @@
   }
   if (!(Manifest$manifest_version %in% c(1L, 2L)) || !length(Manifest$files)) stop("Invalid CLI payload manifest")
   for (Entry in Manifest$files) {
+    if (!is.null(Entry$language) && !identical(Entry$language, "R") && !identical(Entry$language, "Python")) stop("Invalid module language")
     if (!(Entry$origin %in% c("product", "package")) || !.relativePaths(Entry$source) ||
         !(Entry$kind %in% c("runtime", "common", "initial", "migration", "metadata")) ||
         !(Entry$mode %in% c("0644", "0755"))) stop("Invalid manifest entry")
@@ -38,7 +39,8 @@
     if (!is.null(Entry$installed) && dirname(Entry$installed) == "bin" && !Entry$installed %in% Launchers) stop("Only the declared command may occupy bin/")
   }
   Installed <- unlist(lapply(Manifest$files, `[[`, "installed"), use.names = FALSE)
-  Targets <- unlist(lapply(Manifest$files, `[[`, "target"), use.names = FALSE)
+  Targets <- vapply(Filter(function(x) !is.null(x$target), Manifest$files),
+    function(x) paste(if (is.null(x$language)) "R" else x$language, x$target, sep = ":"), character(1L))
   if (anyDuplicated(tolower(Installed)) || anyDuplicated(tolower(Targets))) stop("Manifest repeats a destination")
   if (!all(Launchers %in% Installed)) stop("Manifest must list all command launchers")
   Manifest
@@ -83,4 +85,65 @@
   }
   Record$package$path <- Path
   Record
+}
+
+.verifyPackage <- function(package, library, version, packages, exports) {
+  Libraries <- .libPaths()
+  on.exit(.libPaths(Libraries), add = TRUE)
+  .libPaths(c(library, Libraries))
+  Namespace <- loadNamespace(package)
+  Path <- normalizePath(getNamespaceInfo(Namespace, "path"), mustWork = TRUE)
+  if (!identical(Path, normalizePath(file.path(library, package), mustWork = TRUE))) stop("Selected R library is shadowed: ", Path)
+  if (!identical(as.character(utils::packageVersion(package, lib.loc = library)), version)) stop("Installed version differs from selected artifact")
+  for (Name in packages) loadNamespace(Name)
+  Missing <- setdiff(exports, getNamespaceExports(Namespace))
+  if (length(Missing)) stop("Package lacks CLI exports: ", paste(Missing, collapse = ", "), ". Install the complete product from its checkout with install/install.sh (Windows: install/install.ps1).")
+  list(package = package, version = version)
+}
+
+.doctorProduct <- function(root) {
+  Checks <- list()
+  check <- function(name, expr) {
+    tryCatch({
+      OUT <- force(expr)
+      Checks[[length(Checks) + 1L]] <<- list(name = name, status = "ok", detail = OUT)
+      TRUE
+    }, error = function(e) {
+      Checks[[length(Checks) + 1L]] <<- list(name = name, status = "fail", detail = conditionMessage(e))
+      FALSE
+    })
+  }
+  Record <- jsonlite::read_json(file.path(root, "install.json"))
+  check("R", {
+    Depends <- read.dcf(file.path(root, "lib/DESCRIPTION"), fields = "Depends")[[1L]]
+    Minimum <- regmatches(Depends, regexpr("(?<=\\bR \\(>= )[^)]+", Depends, perl = TRUE))
+    if (length(Minimum) && getRversion() < Minimum) stop("R is older than the required ", Minimum)
+    R.version.string
+  })
+  Valid <- check("integrity", {
+    .verifyResources(root)
+    "Installed package and resource hashes match their receipt"
+  })
+  if (Valid) {
+    check("package", {
+      Requirements <- source(file.path(root, "install/requirements.R"), local = TRUE)$value
+      .verifyPackage(Record$package$name, Record$package$library, Record$package$version,
+                     Requirements$packages, Requirements$exports)
+      paste(Record$package$name, Record$package$version, "loads with its CLI dependencies and exports")
+    })
+  }
+  if (!Valid) Checks[[length(Checks) + 1L]] <- list(name = "package", status = "skipped", detail = "Loading refused because installation integrity failed")
+  check("command", {
+    Command <- sub("-cli$", "", Record$product)
+    if (length(Command) != 1L || !grepl("^[a-z][a-z0-9-]*$", Command)) stop("Invalid command in installation receipt")
+    Expected <- file.path(dirname(dirname(root)), "bin", if (.Platform$OS.type == "windows") paste0(Command, ".cmd") else Command)
+    Found <- unname(Sys.which(Command))
+    if (!nzchar(Found) || !identical(normalizePath(Found, winslash = "/", mustWork = FALSE), normalizePath(Expected, winslash = "/", mustWork = FALSE))) stop("PATH seen by R resolves ", Command, " to ", if (nzchar(Found)) Found else "nothing", "; expected ", Expected)
+    "The first command on PATH is this installation's launcher"
+  })
+  Status <- vapply(Checks, `[[`, character(1L), "status")
+  list(schema = 1L, package = Record$package$name, version = Record$package$version,
+       summary = list(status = if (all(Status == "ok")) "ok" else "fail",
+                      ok = sum(Status == "ok"), fail = sum(Status == "fail"), skipped = sum(Status == "skipped")),
+       checks = Checks)
 }

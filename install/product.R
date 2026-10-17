@@ -40,25 +40,20 @@
   invisible(NULL)
 }
 
-.verifyInstallation <- function(package, library, version, packages, exports) {
+.verifyInstallation <- function(package, library, version, packages, exports, helper) {
   Script <- c(
     "Args <- commandArgs(TRUE)",
     ".libPaths(c(Args[1L], .libPaths()))",
     "tryCatch({",
-    "invisible(loadNamespace(Args[2L]))",
-    "Path <- normalizePath(find.package(Args[2L]), mustWork = TRUE)",
-    "if (!identical(Path, normalizePath(file.path(Args[1L], Args[2L]), mustWork = TRUE))) stop('Selected R library is shadowed: ', Path)",
-    "if (!identical(as.character(utils::packageVersion(Args[2L])), Args[3L])) stop('Installed version differs from selected artifact')",
-    "Count <- as.integer(Args[4L])",
-    "for (Name in Args[4L + seq_len(Count)]) loadNamespace(Name)",
-    "Missing <- setdiff(Args[-seq_len(4L + Count)], getNamespaceExports(Args[2L]))",
-    "if (length(Missing)) stop('Package lacks CLI exports: ', paste(Missing, collapse = ', '), '. Install the complete product from its checkout with install/install.sh (Windows: install/install.ps1).')",
-    "message('Verified installed package: ', Args[2L], ' ', Args[3L], ' at ', Path)",
+    "source(Args[4L], local = TRUE)",
+    "Count <- as.integer(Args[5L])",
+    ".verifyPackage(Args[2L], Args[1L], Args[3L], Args[5L + seq_len(Count)], Args[-seq_len(5L + Count)])",
+    "message('Verified installed package: ', Args[2L], ' ', Args[3L])",
     "}, error = function(e) stop(conditionMessage(e), '\\nR: ', R.version.string, ' at ', R.home(), '\\nLibraries: ', paste(.libPaths(), collapse = .Platform$path.sep), '\\nPackage found: ', paste(find.package(Args[2L], quiet = TRUE), collapse = ', '), call. = FALSE))"
   )
   .runInstaller(c(file.path(R.home("bin"), "Rscript"), "--vanilla", "-e",
                   paste(Script, collapse = "\n")), path = tempdir(),
-                args = c(library, package, version, length(packages), packages, exports))
+                args = c(library, package, version, helper, length(packages), packages, exports))
 }
 
 installProduct <- function(root, args, system = FALSE, check = FALSE) {
@@ -183,7 +178,8 @@ installProduct <- function(root, args, system = FALSE, check = FALSE) {
   Version <- Installed$version
   installRequirements(path = Package$path, library = Library, packages = Packages, dependencies = FALSE)
   .verifyInstallation(package = Package$package, library = Library, version = Version,
-                       packages = Packages, exports = Cli$exports)
+                       packages = Packages, exports = Cli$exports,
+                       helper = file.path(root, "install/cli/manifest.R"))
   if (!system) {
     tryCatch(.runInstaller(c(Rscript, "--vanilla", Manager, "install"), path = tempdir(),
                            args = Prefix),
