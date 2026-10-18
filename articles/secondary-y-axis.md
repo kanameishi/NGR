@@ -1,6 +1,6 @@
 # Secondary Y axis in buildPlot()
 
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
 supports two different “secondary axis” modes.
 
 ## Mode A — linked (one curve, relabel ticks)

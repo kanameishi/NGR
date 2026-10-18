@@ -4,8 +4,8 @@
 
 [![R
 Version](https://img.shields.io/badge/R-%3E%3D%204.1.0-blue)](https://www.r-project.org/)
-[![Version](https://img.shields.io/badge/version-0.3.11-green)](https://averriK.github.io/NGR/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://averrik.github.io/NGR/LICENSE.html)
+[![Version](https://img.shields.io/badge/version-0.3.11-green)](https://kanameishi.github.io/NGR/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://kanameishi.github.io/NGR/LICENSE.html)
 
 R package for generating professional multi-format reports with advanced
 plotting and table formatting capabilities.
@@ -48,17 +48,17 @@ with configurable templates.
 The R package and CLI are separate components. Use the repository’s
 common installer from the repository root, selecting an R library
 explicitly. The [installation
-guide](https://averrik.github.io/NGR/articles/cli.html#install) explains
-the macOS and Windows entries, package-only installation and the
-separate CLI destination. Runtime commands do not install dependencies.
-The repository is private; obtaining its development sources requires
-access.
+guide](https://kanameishi.github.io/NGR/articles/cli.html#install)
+explains the macOS and Windows entries, package-only installation and
+the separate CLI destination. Runtime commands do not install
+dependencies. The repository is private; obtaining its development
+sources requires access.
 
 ## Usage
 
 ### Plots (`buildPlot()`)
 
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
 consumes `data.table`s with:
 
 - **Lines**: `data.lines` with columns `ID`, `X`, `Y` (optional:
@@ -159,7 +159,7 @@ quartoAsYaml(single_file_config)
 ```
 
 See the [Quarto YAML
-guide](https://averrik.github.io/NGR/articles/quarto-yaml.html) for
+guide](https://kanameishi.github.io/NGR/articles/quarto-yaml.html) for
 complete examples.
 
 ### Display utilities
@@ -175,76 +175,76 @@ showMarkdownRendered("README.md")   # Rendered markdown
 ## Exported API
 
 The [function
-reference](https://averrik.github.io/NGR/reference/index.html) lists the
-exported API. The principal families are:
+reference](https://kanameishi.github.io/NGR/reference/index.html) lists
+the exported API. The principal families are:
 
 ### Plotting
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
   — high-level plotting with consistent styling.
-- [`buildPlot.Bar()`](https://averriK.github.io/NGR/reference/buildPlot.Bar.md),
-  [`buildPlot.Histogram()`](https://averriK.github.io/NGR/reference/buildPlot.Histogram.md),
-  [`buildPlot.Model()`](https://averriK.github.io/NGR/reference/buildPlot.Model.md)
+- [`buildPlot.Bar()`](https://kanameishi.github.io/NGR/reference/buildPlot.Bar.md),
+  [`buildPlot.Histogram()`](https://kanameishi.github.io/NGR/reference/buildPlot.Histogram.md),
+  [`buildPlot.Model()`](https://kanameishi.github.io/NGR/reference/buildPlot.Model.md)
   — specialised variants.
-- [`buildHeatmap()`](https://averriK.github.io/NGR/reference/buildHeatmap.md)
+- [`buildHeatmap()`](https://kanameishi.github.io/NGR/reference/buildHeatmap.md)
   — categorical Highcharts heatmaps.
-- [`buildSectionResultantsPlot()`](https://averriK.github.io/NGR/reference/buildSectionResultantsPlot.md)
+- [`buildSectionResultantsPlot()`](https://kanameishi.github.io/NGR/reference/buildSectionResultantsPlot.md)
   — responsive circular-section diagrams for any prepared subset of `N`,
   `M`, and `Q` layers.
 
 ### Tables and reporting
 
-- [`buildTable()`](https://averriK.github.io/NGR/reference/buildTable.md)
+- [`buildTable()`](https://kanameishi.github.io/NGR/reference/buildTable.md)
   — publication-quality tables via gt/flextable/kableExtra.
-- [`buildYAML()`](https://averriK.github.io/NGR/reference/buildYAML.md)
+- [`buildYAML()`](https://kanameishi.github.io/NGR/reference/buildYAML.md)
   — compose Quarto YAML blocks for multi-format rendering.
-- [`quartoReadFrontmatter()`](https://averriK.github.io/NGR/reference/quartoYaml.md),
-  [`quartoMergeBookManifest()`](https://averriK.github.io/NGR/reference/quartoYaml.md),
-  [`quartoSetProjectRender()`](https://averriK.github.io/NGR/reference/quartoYaml.md),
-  [`quartoDocxBookProfile()`](https://averriK.github.io/NGR/reference/quartoYaml.md),
-  [`quartoAsYaml()`](https://averriK.github.io/NGR/reference/quartoYaml.md),
+- [`quartoReadFrontmatter()`](https://kanameishi.github.io/NGR/reference/quartoYaml.md),
+  [`quartoMergeBookManifest()`](https://kanameishi.github.io/NGR/reference/quartoYaml.md),
+  [`quartoSetProjectRender()`](https://kanameishi.github.io/NGR/reference/quartoYaml.md),
+  [`quartoDocxBookProfile()`](https://kanameishi.github.io/NGR/reference/quartoYaml.md),
+  [`quartoAsYaml()`](https://kanameishi.github.io/NGR/reference/quartoYaml.md),
   and related helpers — reusable qrt-style Quarto YAML utilities.
-- [`export()`](https://averriK.github.io/NGR/reference/export.md) —
+- [`export()`](https://kanameishi.github.io/NGR/reference/export.md) —
   render/export utility.
 
 ### Project resources, rendering and publication
 
-- [`pullResources()`](https://averriK.github.io/NGR/reference/pullResources.md),
-  [`compareResources()`](https://averriK.github.io/NGR/reference/compareResources.md),
-  [`checkResources()`](https://averriK.github.io/NGR/reference/checkResources.md)
+- [`pullResources()`](https://kanameishi.github.io/NGR/reference/pullResources.md),
+  [`compareResources()`](https://kanameishi.github.io/NGR/reference/compareResources.md),
+  [`checkResources()`](https://kanameishi.github.io/NGR/reference/checkResources.md)
   — composition, comparison and declared checks for project sources.
-- [`quartoRender()`](https://averriK.github.io/NGR/reference/quartoRender.md),
-  [`quartoRenderManifest()`](https://averriK.github.io/NGR/reference/quartoRenderManifest.md),
-  [`quartoRenderStamp()`](https://averriK.github.io/NGR/reference/quartoRenderStamp.md)
+- [`quartoRender()`](https://kanameishi.github.io/NGR/reference/quartoRender.md),
+  [`quartoRenderManifest()`](https://kanameishi.github.io/NGR/reference/quartoRenderManifest.md),
+  [`quartoRenderStamp()`](https://kanameishi.github.io/NGR/reference/quartoRenderStamp.md)
   — Quarto output, batch selection and provenance.
-- [`netlifyRegister()`](https://averriK.github.io/NGR/reference/netlifyRegister.md),
-  [`netlifyDeploy()`](https://averriK.github.io/NGR/reference/netlifyDeploy.md),
-  [`netlifyDomain()`](https://averriK.github.io/NGR/reference/netlifyDomain.md),
-  [`netlifyUnbind()`](https://averriK.github.io/NGR/reference/netlifyUnbind.md)
+- [`netlifyRegister()`](https://kanameishi.github.io/NGR/reference/netlifyRegister.md),
+  [`netlifyDeploy()`](https://kanameishi.github.io/NGR/reference/netlifyDeploy.md),
+  [`netlifyDomain()`](https://kanameishi.github.io/NGR/reference/netlifyDomain.md),
+  [`netlifyUnbind()`](https://kanameishi.github.io/NGR/reference/netlifyUnbind.md)
   — explicit site and publication operations. Rendering does not publish
   a site.
 
 ### Highcharter themes (gridlines)
 
-- [`hc_theme_538_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_538_gridlines.md),
-  [`hc_theme_economist_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_economist_gridlines.md),
-  [`hc_theme_flat_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_flat_gridlines.md),
-  [`hc_theme_hcrt_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_hcrt_gridlines.md).
+- [`hc_theme_538_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_538_gridlines.md),
+  [`hc_theme_economist_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_economist_gridlines.md),
+  [`hc_theme_flat_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_flat_gridlines.md),
+  [`hc_theme_hcrt_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_hcrt_gridlines.md).
 
 ### Display utilities
 
-- [`showCode()`](https://averriK.github.io/NGR/reference/showCode.md),
-  [`showHTML()`](https://averriK.github.io/NGR/reference/showHTML.md),
-  [`showPDF()`](https://averriK.github.io/NGR/reference/showPDF.md),
-  [`showMarkdownRendered()`](https://averriK.github.io/NGR/reference/showMarkdownRendered.md),
-  [`showGithubREADME()`](https://averriK.github.io/NGR/reference/showGithubREADME.md),
-  [`showASCII()`](https://averriK.github.io/NGR/reference/showASCII.md).
+- [`showCode()`](https://kanameishi.github.io/NGR/reference/showCode.md),
+  [`showHTML()`](https://kanameishi.github.io/NGR/reference/showHTML.md),
+  [`showPDF()`](https://kanameishi.github.io/NGR/reference/showPDF.md),
+  [`showMarkdownRendered()`](https://kanameishi.github.io/NGR/reference/showMarkdownRendered.md),
+  [`showGithubREADME()`](https://kanameishi.github.io/NGR/reference/showGithubREADME.md),
+  [`showASCII()`](https://kanameishi.github.io/NGR/reference/showASCII.md).
 
 ### Presentation effects
 
-- [`showTypewriter()`](https://averriK.github.io/NGR/reference/showTypewriter.md),
-  [`rotateTypewriter()`](https://averriK.github.io/NGR/reference/rotateTypewriter.md),
-  [`buildIndexTypewriter()`](https://averriK.github.io/NGR/reference/buildIndexTypewriter.md).
+- [`showTypewriter()`](https://kanameishi.github.io/NGR/reference/showTypewriter.md),
+  [`rotateTypewriter()`](https://kanameishi.github.io/NGR/reference/rotateTypewriter.md),
+  [`buildIndexTypewriter()`](https://kanameishi.github.io/NGR/reference/buildIndexTypewriter.md).
 
 ## Dependencies
 
@@ -268,24 +268,25 @@ See function documentation via R help:
 
 Pkgdown is configured by `_pkgdown.yml` and renders the articles in
 `vignettes/` and the R reference in `man/`. The public site is
-<https://averrik.github.io/NGR/>.
+<https://kanameishi.github.io/NGR/>.
 
 Public articles:
 
 - [Command-line
-  interface](https://averrik.github.io/NGR/articles/cli.html).
+  interface](https://kanameishi.github.io/NGR/articles/cli.html).
 - [Quarto YAML
-  helpers](https://averrik.github.io/NGR/articles/quarto-yaml.html).
+  helpers](https://kanameishi.github.io/NGR/articles/quarto-yaml.html).
 - [Secondary Y
-  axis](https://averrik.github.io/NGR/articles/secondary-y-axis.html).
+  axis](https://kanameishi.github.io/NGR/articles/secondary-y-axis.html).
 - [Themes with
-  gridlines](https://averrik.github.io/NGR/articles/themes-gridlines.html).
+  gridlines](https://kanameishi.github.io/NGR/articles/themes-gridlines.html).
 - [Typewriter web
-  fonts](https://averrik.github.io/NGR/articles/adding-web-fonts-typewriter.html).
+  fonts](https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html).
 
 ## License
 
-MIT License - see [LICENSE](https://averrik.github.io/NGR/LICENSE.html)
+MIT License - see
+[LICENSE](https://kanameishi.github.io/NGR/LICENSE.html)
 
 ## Citation
 
@@ -295,7 +296,7 @@ MIT License - see [LICENSE](https://averrik.github.io/NGR/LICENSE.html)
   title = {NGR: Next Generation Reporting},
   year = {2020},
   version = {0.3.11},
-  url = {https://averriK.github.io/NGR/}
+  url = {https://kanameishi.github.io/NGR/}
 }
 ```
 

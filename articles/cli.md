@@ -134,14 +134,14 @@ registered source again with `--from` re-points it to that location.
 Each scaffold also has its own `manifest.json`, declaring its resources.
 The project manifest records the composition and provenance instead. NGR
 does not read `qrt.manifest.json`; the [scaffold
-guide](https://averriK.github.io/NGR/articles/scaffolds.md) gives the
+guide](https://kanameishi.github.io/NGR/articles/scaffolds.md) gives the
 three steps that move a project created with the earlier tools.
 
 Resource operations are provided by the installed R library through
-[`pullResources()`](https://averriK.github.io/NGR/reference/pullResources.md),
-[`compareResources()`](https://averriK.github.io/NGR/reference/compareResources.md)
+[`pullResources()`](https://kanameishi.github.io/NGR/reference/pullResources.md),
+[`compareResources()`](https://kanameishi.github.io/NGR/reference/compareResources.md)
 and
-[`checkResources()`](https://averriK.github.io/NGR/reference/checkResources.md).
+[`checkResources()`](https://kanameishi.github.io/NGR/reference/checkResources.md).
 They can also be used directly from R. Resource commands do not require
 Python; the current CLI installer and DOCX correction still use it.
 Windows render staging also uses Python’s standard library when a
@@ -151,11 +151,11 @@ software declared by their source.
 `render` supports HTML books, HTML documents, RevealJS presentations,
 simple and composed DOCX, and preserves existing static artifacts. It
 loads the installed NGR R package and calls
-[`quartoRender()`](https://averriK.github.io/NGR/reference/quartoRender.md),
+[`quartoRender()`](https://kanameishi.github.io/NGR/reference/quartoRender.md),
 independently of a source checkout. That API owns staging, Quarto
 execution, DOCX repair and output delivery; its Python repair resource
 is included in the R package.
-[`quartoRenderManifest()`](https://averriK.github.io/NGR/reference/quartoRenderManifest.md)
+[`quartoRenderManifest()`](https://kanameishi.github.io/NGR/reference/quartoRenderManifest.md)
 owns batch selection, preflight and execution. Static and legacy map
 entries refer to external products; NGR does not run their producer
 scripts.
@@ -179,16 +179,16 @@ R consumers can call these operations without the CLI:
 
 | Operation | R interface |
 |----|----|
-| Incorporate or update resources | [`pullResources()`](https://averriK.github.io/NGR/reference/pullResources.md) |
-| Compare resources | [`compareResources()`](https://averriK.github.io/NGR/reference/compareResources.md) |
-| Diagnose source requirements | [`checkResources()`](https://averriK.github.io/NGR/reference/checkResources.md) |
-| Render one source or a manifest selection | [`quartoRender()`](https://averriK.github.io/NGR/reference/quartoRender.md), [`quartoRenderManifest()`](https://averriK.github.io/NGR/reference/quartoRenderManifest.md) |
-| Inspect render provenance | [`quartoRenderStamp()`](https://averriK.github.io/NGR/reference/quartoRenderStamp.md) |
-| Associate, publish or configure Netlify sites | [`netlifyRegister()`](https://averriK.github.io/NGR/reference/netlifyRegister.md), [`netlifyDeploy()`](https://averriK.github.io/NGR/reference/netlifyDeploy.md), [`netlifyDomain()`](https://averriK.github.io/NGR/reference/netlifyDomain.md), [`netlifyUnbind()`](https://averriK.github.io/NGR/reference/netlifyUnbind.md) |
-| The same for a manifest selection | [`netlifyRegisterManifest()`](https://averriK.github.io/NGR/reference/netlifyRegisterManifest.md), [`netlifyDeployManifest()`](https://averriK.github.io/NGR/reference/netlifyRegisterManifest.md), [`netlifyDomainManifest()`](https://averriK.github.io/NGR/reference/netlifyRegisterManifest.md) |
+| Incorporate or update resources | [`pullResources()`](https://kanameishi.github.io/NGR/reference/pullResources.md) |
+| Compare resources | [`compareResources()`](https://kanameishi.github.io/NGR/reference/compareResources.md) |
+| Diagnose source requirements | [`checkResources()`](https://kanameishi.github.io/NGR/reference/checkResources.md) |
+| Render one source or a manifest selection | [`quartoRender()`](https://kanameishi.github.io/NGR/reference/quartoRender.md), [`quartoRenderManifest()`](https://kanameishi.github.io/NGR/reference/quartoRenderManifest.md) |
+| Inspect render provenance | [`quartoRenderStamp()`](https://kanameishi.github.io/NGR/reference/quartoRenderStamp.md) |
+| Associate, publish or configure Netlify sites | [`netlifyRegister()`](https://kanameishi.github.io/NGR/reference/netlifyRegister.md), [`netlifyDeploy()`](https://kanameishi.github.io/NGR/reference/netlifyDeploy.md), [`netlifyDomain()`](https://kanameishi.github.io/NGR/reference/netlifyDomain.md), [`netlifyUnbind()`](https://kanameishi.github.io/NGR/reference/netlifyUnbind.md) |
+| The same for a manifest selection | [`netlifyRegisterManifest()`](https://kanameishi.github.io/NGR/reference/netlifyRegisterManifest.md), [`netlifyDeployManifest()`](https://kanameishi.github.io/NGR/reference/netlifyRegisterManifest.md), [`netlifyDomainManifest()`](https://kanameishi.github.io/NGR/reference/netlifyRegisterManifest.md) |
 
 Scaffolds use
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
 for supported graphics. The scaffold or scientific producer owns data
 selection and calculation; NGR owns the representation. Existing map
 HTML is an input to reports. Rendering never starts a map producer or

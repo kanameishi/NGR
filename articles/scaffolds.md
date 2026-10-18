@@ -119,7 +119,7 @@ scripts would leave duplicated implementations.
 
 **Builder migration is pending.** SHA retains its figure and table
 scripts, including `scripts/fig/UHS.R`, which calls the existing
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
 API. Resource composition tests and successful renders do not establish
 a new builder architecture. Any extraction must first justify its
 responsibility and benefit against direct use of the existing NGR APIs.

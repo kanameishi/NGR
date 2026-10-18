@@ -70,7 +70,7 @@ buildSectionResultantsPlot(
 
   Positive widget height of at least 360 pixels. Width remains
   responsive, following the sizing contract used by
-  [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md).
+  [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md).
 
 ## Value
 

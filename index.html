@@ -61,7 +61,7 @@
 <div class="page-header"><h1 id="ngr">NGR<a class="anchor" aria-label="anchor" href="#ngr"></a>
 </h1></div>
 <p><strong>Next Generation Reporting</strong></p>
-<p><a href="https://www.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%3E%3D%204.1.0-blue" alt="R Version"></a> <a href="https://averriK.github.io/NGR/"><img src="https://img.shields.io/badge/version-0.3.11-green" alt="Version"></a> <a href="https://averrik.github.io/NGR/LICENSE.html" class="external-link"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a></p>
+<p><a href="https://www.r-project.org/" class="external-link"><img src="https://img.shields.io/badge/R-%3E%3D%204.1.0-blue" alt="R Version"></a> <a href="https://kanameishi.github.io/NGR/"><img src="https://img.shields.io/badge/version-0.3.11-green" alt="Version"></a> <a href="https://kanameishi.github.io/NGR/LICENSE.html"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a></p>
 <p>R package for generating professional multi-format reports with advanced plotting and table formatting capabilities.</p>
 <div class="section level2">
 <h2 id="contents">Contents<a class="anchor" aria-label="anchor" href="#contents"></a>
@@ -107,7 +107,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The R package and CLI are separate components. Use the repository’s common installer from the repository root, selecting an R library explicitly. The <a href="https://averrik.github.io/NGR/articles/cli.html#install" class="external-link">installation guide</a> explains the macOS and Windows entries, package-only installation and the separate CLI destination. Runtime commands do not install dependencies. The repository is private; obtaining its development sources requires access.</p>
+<p>The R package and CLI are separate components. Use the repository’s common installer from the repository root, selecting an R library explicitly. The <a href="https://kanameishi.github.io/NGR/articles/cli.html#install">installation guide</a> explains the macOS and Windows entries, package-only installation and the separate CLI destination. Runtime commands do not install dependencies. The repository is private; obtaining its development sources requires access.</p>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -128,7 +128,7 @@
 <h4 id="basic-line-plot">Basic line plot<a class="anchor" aria-label="anchor" href="#basic-line-plot"></a>
 </h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://averriK.github.io/NGR/">NGR</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://kanameishi.github.io/NGR/">NGR</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
@@ -178,7 +178,7 @@
 <h3 id="tables-buildtable">Tables (<code>buildTable()</code>)<a class="anchor" aria-label="anchor" href="#tables-buildtable"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://averriK.github.io/NGR/">NGR</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://kanameishi.github.io/NGR/">NGR</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/buildTable.html">buildTable</a></span><span class="op">(</span></span>
 <span>  <span class="va">iris</span>,</span>
@@ -192,7 +192,7 @@
 </h3>
 <p>These helpers are ordinary R APIs for qrt-style runtime Quarto YAML. They do not call the <code>qrt</code> CLI. This example requires your existing <code>report.qmd</code> and <code>yml/_quarto.yml</code> in the working directory and writes <code>_quarto.yml</code> there.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://averriK.github.io/NGR/">NGR</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://kanameishi.github.io/NGR/">NGR</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">frontmatter</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/quartoYaml.html">quartoReadFrontmatter</a></span><span class="op">(</span><span class="st">"report.qmd"</span><span class="op">)</span></span>
 <span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu">yaml</span><span class="fu">::</span><span class="fu"><a href="https://yaml.r-lib.org/reference/read_yaml.html" class="external-link">read_yaml</a></span><span class="op">(</span><span class="st">"yml/_quarto.yml"</span><span class="op">)</span></span>
@@ -202,7 +202,7 @@
 <span></span>
 <span><span class="va">single_file_config</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/quartoYaml.html">quartoSetProjectRender</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"report.qmd"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/quartoYaml.html">quartoAsYaml</a></span><span class="op">(</span><span class="va">single_file_config</span><span class="op">)</span></span></code></pre></div>
-<p>See the <a href="https://averrik.github.io/NGR/articles/quarto-yaml.html" class="external-link">Quarto YAML guide</a> for complete examples.</p>
+<p>See the <a href="https://kanameishi.github.io/NGR/articles/quarto-yaml.html">Quarto YAML guide</a> for complete examples.</p>
 </div>
 <div class="section level3">
 <h3 id="display-utilities">Display utilities<a class="anchor" aria-label="anchor" href="#display-utilities"></a>
@@ -217,7 +217,7 @@
 <div class="section level2">
 <h2 id="exported-api">Exported API<a class="anchor" aria-label="anchor" href="#exported-api"></a>
 </h2>
-<p>The <a href="https://averrik.github.io/NGR/reference/index.html" class="external-link">function reference</a> lists the exported API. The principal families are:</p>
+<p>The <a href="https://kanameishi.github.io/NGR/reference/index.html">function reference</a> lists the exported API. The principal families are:</p>
 <div class="section level3">
 <h3 id="plotting">Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a>
 </h3>
@@ -303,25 +303,25 @@
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">NGR</span></span>
 <span><span class="op">?</span><span class="va">buildPlot</span></span>
 <span><span class="op">?</span><span class="va">buildTable</span></span></code></pre></div>
-<p>Pkgdown is configured by <code>_pkgdown.yml</code> and renders the articles in <code>vignettes/</code> and the R reference in <code>man/</code>. The public site is <a href="https://averrik.github.io/NGR/" class="external-link uri">https://averrik.github.io/NGR/</a>.</p>
+<p>Pkgdown is configured by <code>_pkgdown.yml</code> and renders the articles in <code>vignettes/</code> and the R reference in <code>man/</code>. The public site is <a href="https://kanameishi.github.io/NGR/" class="uri">https://kanameishi.github.io/NGR/</a>.</p>
 <p>Public articles:</p>
 <ul>
 <li>
-<a href="https://averrik.github.io/NGR/articles/cli.html" class="external-link">Command-line interface</a>.</li>
+<a href="https://kanameishi.github.io/NGR/articles/cli.html">Command-line interface</a>.</li>
 <li>
-<a href="https://averrik.github.io/NGR/articles/quarto-yaml.html" class="external-link">Quarto YAML helpers</a>.</li>
+<a href="https://kanameishi.github.io/NGR/articles/quarto-yaml.html">Quarto YAML helpers</a>.</li>
 <li>
-<a href="https://averrik.github.io/NGR/articles/secondary-y-axis.html" class="external-link">Secondary Y axis</a>.</li>
+<a href="https://kanameishi.github.io/NGR/articles/secondary-y-axis.html">Secondary Y axis</a>.</li>
 <li>
-<a href="https://averrik.github.io/NGR/articles/themes-gridlines.html" class="external-link">Themes with gridlines</a>.</li>
+<a href="https://kanameishi.github.io/NGR/articles/themes-gridlines.html">Themes with gridlines</a>.</li>
 <li>
-<a href="https://averrik.github.io/NGR/articles/adding-web-fonts-typewriter.html" class="external-link">Typewriter web fonts</a>.</li>
+<a href="https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html">Typewriter web fonts</a>.</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT License - see <a href="https://averrik.github.io/NGR/LICENSE.html" class="external-link">LICENSE</a></p>
+<p>MIT License - see <a href="https://kanameishi.github.io/NGR/LICENSE.html">LICENSE</a></p>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
@@ -331,7 +331,7 @@
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">  title = {NGR: Next Generation Reporting},</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">  year = {2020},</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">  version = {0.3.11},</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">  url = {https://averriK.github.io/NGR/}</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">  url = {https://kanameishi.github.io/NGR/}</span></span>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
 <hr>
 </div>

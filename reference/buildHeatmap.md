@@ -107,7 +107,7 @@ buildHeatmap(
 - plot.theme:
 
   Optional Highcharts theme object (e.g.
-  [`hc_theme_538_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_538_gridlines.md)).
+  [`hc_theme_538_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_538_gridlines.md)).
   Default NULL applies no theme.
 
 ## Value

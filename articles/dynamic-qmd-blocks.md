@@ -1,6 +1,6 @@
 # Dynamic QMD blocks
 
-[`knitBlock()`](https://averriK.github.io/NGR/reference/knitBlock.md)
+[`knitBlock()`](https://kanameishi.github.io/NGR/reference/knitBlock.md)
 composes reusable QMD fragments at render time. It reads a QMD block,
 expands Quarto include shortcodes, rewrites labels with a
 caller-supplied stem, evaluates the block with caller-supplied
@@ -126,20 +126,20 @@ knitr::kable(data.frame(site = siteID_TARGET, model = ID_TARGET, value = VALUE))
 
 `stem` must be unique for every numbered call in one render. If the same
 dynamic label is emitted twice,
-[`knitBlock()`](https://averriK.github.io/NGR/reference/knitBlock.md)
+[`knitBlock()`](https://kanameishi.github.io/NGR/reference/knitBlock.md)
 fails explicitly instead of allowing an ambiguous Quarto
 cross-reference.
 
 `vars` is a named list. It is the place to pass selectors and captions
 that the QMD fragment already understands, such as `ID_TARGET`,
 `siteID_TARGET`, `TR_TARGET`, `CAP`, or project-specific equivalents.
-[`knitBlock()`](https://averriK.github.io/NGR/reference/knitBlock.md)
+[`knitBlock()`](https://kanameishi.github.io/NGR/reference/knitBlock.md)
 does not know about PSHA, sites, models, or captions.
 
 ## Direct Helper Or Project Scaffold
 
 Use
-[`knitBlock()`](https://averriK.github.io/NGR/reference/knitBlock.md)
+[`knitBlock()`](https://kanameishi.github.io/NGR/reference/knitBlock.md)
 directly in a QMD `results: asis` chunk when a report or presentation
 needs to repeat a shared block for several sites, models, or
 language-specific captions.

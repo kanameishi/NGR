@@ -5,10 +5,10 @@
 ### Project resources, rendering and publication
 
 - New project resource operations:
-  [`pullResources()`](https://averriK.github.io/NGR/reference/pullResources.md),
-  [`compareResources()`](https://averriK.github.io/NGR/reference/compareResources.md)
+  [`pullResources()`](https://kanameishi.github.io/NGR/reference/pullResources.md),
+  [`compareResources()`](https://kanameishi.github.io/NGR/reference/compareResources.md)
   and
-  [`checkResources()`](https://averriK.github.io/NGR/reference/checkResources.md)
+  [`checkResources()`](https://kanameishi.github.io/NGR/reference/checkResources.md)
   incorporate, compare and check resources declared by source manifests.
   A source is identified by its `id`, so naming a registered source
   again re-points it to another location. A file entry may override the
@@ -16,23 +16,23 @@
   project through `{project_id}`, and a source outside Git reports the
   revision recorded in a `BUILD_INFO` file beside its manifest.
 - New rendering operations:
-  [`quartoRender()`](https://averriK.github.io/NGR/reference/quartoRender.md),
-  [`quartoRenderManifest()`](https://averriK.github.io/NGR/reference/quartoRenderManifest.md)
+  [`quartoRender()`](https://kanameishi.github.io/NGR/reference/quartoRender.md),
+  [`quartoRenderManifest()`](https://kanameishi.github.io/NGR/reference/quartoRenderManifest.md)
   and
-  [`quartoRenderStamp()`](https://averriK.github.io/NGR/reference/quartoRenderStamp.md).
+  [`quartoRenderStamp()`](https://kanameishi.github.io/NGR/reference/quartoRenderStamp.md).
   The publication stamp reaches filters and scaffolds through the
   `NGR_RENDER_STAMP` environment variable.
 - New Netlify operations:
-  [`netlifyRegister()`](https://averriK.github.io/NGR/reference/netlifyRegister.md),
-  [`netlifyDeploy()`](https://averriK.github.io/NGR/reference/netlifyDeploy.md),
-  [`netlifyDomain()`](https://averriK.github.io/NGR/reference/netlifyDomain.md)
+  [`netlifyRegister()`](https://kanameishi.github.io/NGR/reference/netlifyRegister.md),
+  [`netlifyDeploy()`](https://kanameishi.github.io/NGR/reference/netlifyDeploy.md),
+  [`netlifyDomain()`](https://kanameishi.github.io/NGR/reference/netlifyDomain.md)
   and
-  [`netlifyUnbind()`](https://averriK.github.io/NGR/reference/netlifyUnbind.md),
+  [`netlifyUnbind()`](https://kanameishi.github.io/NGR/reference/netlifyUnbind.md),
   with the manifest forms
-  [`netlifyRegisterManifest()`](https://averriK.github.io/NGR/reference/netlifyRegisterManifest.md),
-  [`netlifyDeployManifest()`](https://averriK.github.io/NGR/reference/netlifyRegisterManifest.md)
+  [`netlifyRegisterManifest()`](https://kanameishi.github.io/NGR/reference/netlifyRegisterManifest.md),
+  [`netlifyDeployManifest()`](https://kanameishi.github.io/NGR/reference/netlifyRegisterManifest.md)
   and
-  [`netlifyDomainManifest()`](https://averriK.github.io/NGR/reference/netlifyRegisterManifest.md).
+  [`netlifyDomainManifest()`](https://kanameishi.github.io/NGR/reference/netlifyRegisterManifest.md).
 - The `ngr` command-line interface interprets its arguments in
   `cli/main.R` and calls only exported functions; it requires NGR \>=
   0.4.0.
@@ -44,7 +44,7 @@ unchanged.
 
 ### API
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
   gains `xAxis.bands` and `yAxis.bands` for shaded axis regions
   (Highcharts `plotBands`) drawn behind the series. The semantic form
   `list(cuts = , colors = )` splits an axis into `length(cuts) + 1`
@@ -59,7 +59,7 @@ unchanged.
 ### API
 
 - Add
-  [`buildSectionResultantsPlot()`](https://averriK.github.io/NGR/reference/buildSectionResultantsPlot.md)
+  [`buildSectionResultantsPlot()`](https://kanameishi.github.io/NGR/reference/buildSectionResultantsPlot.md)
   for responsive, interactive `N`/`M`/`Q` diagrams around a circular
   section. The function renders any non-empty caller-prepared subset as
   one or more square panels, preserves independent radial ordinates, and
@@ -69,7 +69,7 @@ unchanged.
 
 ### API
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
   gains an explicit `data.ranges` input for keyed lower/upper curves.
   Coincident bounds render as one solid line; distinct bounds render as
   linked solid boundary lines with one legend item and a shaded band.
@@ -87,7 +87,7 @@ unchanged.
 
 ### API
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md):
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md):
   remove the `xAxis.log.offset` / `yAxis.log.offset` transformation
   layer and replace it with `xAxis.log.zero` for log-log plots. When
   `xAxis.log.zero = TRUE`, points with `X == 0` are assigned an internal
@@ -98,7 +98,7 @@ unchanged.
 
 ### Visual
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md):
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md):
   hide technical auto-envelope IDs (`fill.min` / `fill.max`, default
   `.min` / `.max`) from the legend and tooltip when
   `fill.minmax = TRUE`, and exclude those technical boundary series from
@@ -117,7 +117,7 @@ unchanged.
 
 ### Bug fixes
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md):
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md):
   revert the `tickPositioner` injection added in 0.3.4. Highcharts
   treats `tickPositioner` positions as linear coordinates on a
   logarithmic axis, which collapsed our custom positions to the right
@@ -136,11 +136,11 @@ unchanged.
 
 ### Bug fixes
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md):
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md):
   change default `plot.theme` from
   [`hc_theme_flat()`](https://jkunst.com/highcharter/reference/hc_theme_flat.html)
   to
-  [`hc_theme_flat_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_flat_gridlines.md).
+  [`hc_theme_flat_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_flat_gridlines.md).
   The previous default silently broke the log-axis `tickPositioner`
   callback (see 0.3.4) because it omitted `minorTickInterval = "auto"` —
   without that, Highcharts skips the custom tick positions entirely and
@@ -155,7 +155,7 @@ unchanged.
 
 ### Bug fixes
 
-- [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md):
+- [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md):
   fix major-tick labels on logarithmic axes when the data contains
   non-positive values (e.g. `Tn = 0` for PGA in response spectra). The
   existing `xAxis.log.offset` / `yAxis.log.offset` mechanism shifts the

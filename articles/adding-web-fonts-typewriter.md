@@ -5,9 +5,9 @@
 This document describes the process for adding new Google Fonts (or
 other web fonts) to the typewriter effect functions in the NGR package.
 The typewriter functions include: -
-[`showTypewriter()`](https://averriK.github.io/NGR/reference/showTypewriter.md) -
+[`showTypewriter()`](https://kanameishi.github.io/NGR/reference/showTypewriter.md) -
 R/typewriter.R -
-[`rotateTypewriter()`](https://averriK.github.io/NGR/reference/rotateTypewriter.md) -
+[`rotateTypewriter()`](https://kanameishi.github.io/NGR/reference/rotateTypewriter.md) -
 R/rotateTypewriter.R
 
 ## When to Add a Font

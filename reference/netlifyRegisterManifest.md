@@ -1,10 +1,10 @@
 # Register, publish or configure the Netlify sites of a manifest selection
 
 Manifest forms of
-[`netlifyRegister()`](https://averriK.github.io/NGR/reference/netlifyRegister.md),
-[`netlifyDeploy()`](https://averriK.github.io/NGR/reference/netlifyDeploy.md)
+[`netlifyRegister()`](https://kanameishi.github.io/NGR/reference/netlifyRegister.md),
+[`netlifyDeploy()`](https://kanameishi.github.io/NGR/reference/netlifyDeploy.md)
 and
-[`netlifyDomain()`](https://averriK.github.io/NGR/reference/netlifyDomain.md).
+[`netlifyDomain()`](https://kanameishi.github.io/NGR/reference/netlifyDomain.md).
 Each reads the artifact manifest, applies the alias selection and
 validates the whole selection before its first effect. Registration and
 domains take each artifact's `siteSlug` and `domain`; those values must
@@ -97,4 +97,4 @@ earlier effects. Dry runs contact no provider and write no registry.
 
 ## See also
 
-[`quartoRenderManifest()`](https://averriK.github.io/NGR/reference/quartoRenderManifest.md)
+[`quartoRenderManifest()`](https://kanameishi.github.io/NGR/reference/quartoRenderManifest.md)

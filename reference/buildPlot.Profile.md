@@ -11,7 +11,7 @@ belongs to the caller, which calls this function once per panel and lays
 the widgets out.
 
 Compared with
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
 this builder adds explicit per-series colour, per-series marker symbols,
 and a legend switch, and it defaults to a fixed symmetric abscissa. It
 does not select surveys, order series, or decide the reference: the
@@ -46,7 +46,7 @@ buildPlot.Profile(
   columns are `ID` (series identity), `X` (measured quantity) and `Y`
   (depth, positive downward). Optional columns, constant within each
   `ID`: `style` (a dash style accepted by
-  [`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)),
+  [`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)),
   `size` (line width), `color` (explicit series colour) and `symbol`
   (marker symbol, one of `circle`, `square`, `diamond`, `triangle`,
   `triangle-down`). Series are drawn in order of first appearance of

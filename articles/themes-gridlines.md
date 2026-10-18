@@ -12,10 +12,10 @@ secundarias (minor gridlines)** en escalas logarítmicas.
 He creado dos nuevas funciones de tema que extienden los temas
 profesionales con líneas de grilla secundarias visibles:
 
-- [`hc_theme_hcrt_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_hcrt_gridlines.md) -
+- [`hc_theme_hcrt_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_hcrt_gridlines.md) -
   Basado en
   [`hc_theme_hcrt()`](https://jkunst.com/highcharter/reference/hc_theme_hcrt.html)
-- [`hc_theme_flat_gridlines()`](https://averriK.github.io/NGR/reference/hc_theme_flat_gridlines.md) -
+- [`hc_theme_flat_gridlines()`](https://kanameishi.github.io/NGR/reference/hc_theme_flat_gridlines.md) -
   Basado en
   [`hc_theme_flat()`](https://jkunst.com/highcharter/reference/hc_theme_flat.html)
 
@@ -129,7 +129,7 @@ buildPlot(data.lines = my_data, plot.theme = mi_tema)
 Los ejemplos de esta vignette son intencionalmente mínimos. Para
 ejemplos ejecutables, use la documentación de las funciones
 `hc_theme_*_gridlines()` y
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md).
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md).
 
 ## Referencias
 

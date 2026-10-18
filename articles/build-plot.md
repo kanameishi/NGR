@@ -1,6 +1,6 @@
 # buildPlot line and point layers
 
-[`buildPlot()`](https://averriK.github.io/NGR/reference/buildPlot.md)
+[`buildPlot()`](https://kanameishi.github.io/NGR/reference/buildPlot.md)
 composes highcharter plots from table-like inputs. The common pattern is
 one `data.table` for line series and, when needed, a second `data.table`
 for point series. Both tables use `ID` to define the series and `X`/`Y`

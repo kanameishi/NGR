@@ -54,4 +54,4 @@ transaction.
 
 ## See also
 
-[`quartoRender()`](https://averriK.github.io/NGR/reference/quartoRender.md)
+[`quartoRender()`](https://kanameishi.github.io/NGR/reference/quartoRender.md)
