@@ -2,7 +2,7 @@
 
 **Next Generation Reporting**
 
-[![R Version](https://img.shields.io/badge/R-%3E%3D%204.1.0-blue)](https://www.r-project.org/) [![Version](https://img.shields.io/badge/version-0.3.11-green)](https://averriK.github.io/NGR/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://averrik.github.io/NGR/LICENSE.html)
+[![R Version](https://img.shields.io/badge/R-%3E%3D%204.1.0-blue)](https://www.r-project.org/) [![Version](https://img.shields.io/badge/version-0.3.11-green)](https://kanameishi.github.io/NGR/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://kanameishi.github.io/NGR/LICENSE.html)
 
 R package for generating professional multi-format reports with advanced plotting and table formatting capabilities.
 
@@ -37,7 +37,7 @@ NGR streamlines data visualization and presentation by providing high-level func
 
 The R package and CLI are separate components. Use the repository's common
 installer from the repository root, selecting an R library explicitly.
-The [installation guide](https://averrik.github.io/NGR/articles/cli.html#install)
+The [installation guide](https://kanameishi.github.io/NGR/articles/cli.html#install)
 explains the macOS and Windows entries, package-only installation and the
 separate CLI destination. Runtime commands do not install dependencies.
 The repository is private; obtaining its development sources requires access.
@@ -135,7 +135,7 @@ single_file_config <- quartoSetProjectRender(base, "report.qmd")
 quartoAsYaml(single_file_config)
 ```
 
-See the [Quarto YAML guide](https://averrik.github.io/NGR/articles/quarto-yaml.html)
+See the [Quarto YAML guide](https://kanameishi.github.io/NGR/articles/quarto-yaml.html)
 for complete examples.
 
 ### Display utilities
@@ -149,7 +149,7 @@ showMarkdownRendered("README.md")   # Rendered markdown
 
 ## Exported API
 
-The [function reference](https://averrik.github.io/NGR/reference/index.html)
+The [function reference](https://kanameishi.github.io/NGR/reference/index.html)
 lists the exported API. The principal families are:
 
 ### Plotting
@@ -208,19 +208,19 @@ See function documentation via R help:
 
 Pkgdown is configured by `_pkgdown.yml` and renders the articles in
 `vignettes/` and the R reference in `man/`. The public site is
-<https://averrik.github.io/NGR/>.
+<https://kanameishi.github.io/NGR/>.
 
 Public articles:
 
-- [Command-line interface](https://averrik.github.io/NGR/articles/cli.html).
-- [Quarto YAML helpers](https://averrik.github.io/NGR/articles/quarto-yaml.html).
-- [Secondary Y axis](https://averrik.github.io/NGR/articles/secondary-y-axis.html).
-- [Themes with gridlines](https://averrik.github.io/NGR/articles/themes-gridlines.html).
-- [Typewriter web fonts](https://averrik.github.io/NGR/articles/adding-web-fonts-typewriter.html).
+- [Command-line interface](https://kanameishi.github.io/NGR/articles/cli.html).
+- [Quarto YAML helpers](https://kanameishi.github.io/NGR/articles/quarto-yaml.html).
+- [Secondary Y axis](https://kanameishi.github.io/NGR/articles/secondary-y-axis.html).
+- [Themes with gridlines](https://kanameishi.github.io/NGR/articles/themes-gridlines.html).
+- [Typewriter web fonts](https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html).
 
 ## License
 
-MIT License - see [LICENSE](https://averrik.github.io/NGR/LICENSE.html)
+MIT License - see [LICENSE](https://kanameishi.github.io/NGR/LICENSE.html)
 
 ## Citation
 
@@ -230,7 +230,7 @@ MIT License - see [LICENSE](https://averrik.github.io/NGR/LICENSE.html)
   title = {NGR: Next Generation Reporting},
   year = {2020},
   version = {0.3.11},
-  url = {https://averriK.github.io/NGR/}
+  url = {https://kanameishi.github.io/NGR/}
 }
 ```
 

@@ -1,7 +1,7 @@
 # NGR CLI
 
 The CLI lives in `cli/`; the R package remains independently buildable in
-`lib/`. Follow the [public installation guide](https://averrik.github.io/NGR/articles/cli.html#install)
+`lib/`. Follow the [public installation guide](https://kanameishi.github.io/NGR/articles/cli.html#install)
 from the repository root. Installation and package tooling live in `install/`,
 with macOS and Windows entries `install/install.sh` and `install/install.ps1`.
 The CLI component checks the installed NGR package and never installs, updates
@@ -157,7 +157,7 @@ The pull records new receipts for every file, preserves project seeds and
 brings the scaffold's `manifest.json` readers with `scripts/`. Verify NGR and
 the earlier tools in the same tree; once everything checks out, remove
 `qrt.manifest.json` in a later commit of the project. See the
-[scaffold guide](https://averrik.github.io/NGR/articles/scaffolds.html#existing-psha-projects).
+[scaffold guide](https://kanameishi.github.io/NGR/articles/scaffolds.html#existing-psha-projects).
 
 ## Render and deploy
 

@@ -4,7 +4,7 @@ Title: Next Generation Reporting
 Description: The NGR package provides comprehensive tools for generating professional and customizable reports in R. It offers advanced functions to create high-quality plots and well-formatted tables effortlessly. It streamlines the process of data visualization and presentation, allowing users to build detailed reports that combine insightful graphics and tables seamlessly. It integrates Quarto for multi-format rendering (HTML/PDF/DOCX) with configurable templates.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: https://averriK.github.io/NGR/
+URL: https://kanameishi.github.io/NGR/
 Depends: R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
 Imports: 

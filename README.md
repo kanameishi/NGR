@@ -1,6 +1,6 @@
 # NGR
 
-[Documentation](https://averriK.github.io/NGR/) · [R package](lib/)
+[Documentation](https://kanameishi.github.io/NGR/) · [R package](lib/)
 
 | Component | Source | Status |
 |---|---|---|
@@ -17,10 +17,10 @@ Public documentation is rendered by pkgdown from `lib/vignettes/` and
 
 Use the common macOS, Linux or Windows installer from the repository root to
 install the R library and CLI together. Follow the
-[installation and CLI guide](https://averrik.github.io/NGR/articles/cli.html).
+[installation and CLI guide](https://kanameishi.github.io/NGR/articles/cli.html).
 Runtime commands load the installed package and do not install dependencies.
 
 The repository is private. Public documentation is on
-[GitHub Pages](https://averrik.github.io/NGR/).
+[GitHub Pages](https://kanameishi.github.io/NGR/).
 
 Open the RStudio project inside `lib/` for package development.
