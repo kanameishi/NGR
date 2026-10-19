@@ -107,7 +107,8 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The R package and CLI are separate components. Use the repository’s common installer from the repository root, selecting an R library explicitly. The <a href="https://kanameishi.github.io/NGR/articles/cli.html#install">installation guide</a> explains the macOS and Windows entries, package-only installation and the separate CLI destination. Runtime commands do not install dependencies. The repository is private; obtaining its development sources requires access.</p>
+<p>The library and the <code>ngr</code> command-line interface are installed together from the repository root with the product installer, which the <a href="https://kanameishi.github.io/NGR/articles/cli.html#install">installation guide</a> documents.</p>
+<p>Open the RStudio project inside <code>lib/</code> for package development.</p>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -304,19 +305,51 @@
 <span><span class="op">?</span><span class="va">buildPlot</span></span>
 <span><span class="op">?</span><span class="va">buildTable</span></span></code></pre></div>
 <p>Pkgdown is configured by <code>_pkgdown.yml</code> and renders the articles in <code>vignettes/</code> and the R reference in <code>man/</code>. The public site is <a href="https://kanameishi.github.io/NGR/" class="uri">https://kanameishi.github.io/NGR/</a>.</p>
-<p>Public articles:</p>
-<ul>
-<li>
-<a href="https://kanameishi.github.io/NGR/articles/cli.html">Command-line interface</a>.</li>
-<li>
-<a href="https://kanameishi.github.io/NGR/articles/quarto-yaml.html">Quarto YAML helpers</a>.</li>
-<li>
-<a href="https://kanameishi.github.io/NGR/articles/secondary-y-axis.html">Secondary Y axis</a>.</li>
-<li>
-<a href="https://kanameishi.github.io/NGR/articles/themes-gridlines.html">Themes with gridlines</a>.</li>
-<li>
-<a href="https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html">Typewriter web fonts</a>.</li>
-</ul>
+<p>Public articles by family of the <a href="https://kanameishi.github.io/NGR/reference/index.html">function reference</a>:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Family</th>
+<th>Articles</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Plotting</td>
+<td>
+<a href="https://kanameishi.github.io/NGR/articles/build-plot.html">buildPlot line and point layers</a>; <a href="https://kanameishi.github.io/NGR/articles/secondary-y-axis.html">Secondary Y axis in buildPlot()</a>
+</td>
+</tr>
+<tr>
+<td>Tables and report composition</td>
+<td><a href="https://kanameishi.github.io/NGR/articles/dynamic-qmd-blocks.html">Dynamic QMD blocks</a></td>
+</tr>
+<tr>
+<td>Project resources</td>
+<td>
+<a href="https://kanameishi.github.io/NGR/articles/scaffolds.html">Scaffolds and shared builders</a>; <a href="https://kanameishi.github.io/NGR/articles/cli.html">Command-line interface</a>
+</td>
+</tr>
+<tr>
+<td>Quarto rendering; Netlify publication</td>
+<td><a href="https://kanameishi.github.io/NGR/articles/cli.html">Command-line interface</a></td>
+</tr>
+<tr>
+<td>Quarto YAML helpers</td>
+<td><a href="https://kanameishi.github.io/NGR/articles/quarto-yaml.html">Quarto YAML helpers</a></td>
+</tr>
+<tr>
+<td>Highcharter themes</td>
+<td><a href="https://kanameishi.github.io/NGR/articles/themes-gridlines.html">Themes with gridlines</a></td>
+</tr>
+<tr>
+<td>Display utilities</td>
+<td><a href="https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html">Typewriter web fonts</a></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>

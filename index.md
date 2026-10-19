@@ -45,14 +45,13 @@ with configurable templates.
 
 ## Installation
 
-The R package and CLI are separate components. Use the repository’s
-common installer from the repository root, selecting an R library
-explicitly. The [installation
+The library and the `ngr` command-line interface are installed together
+from the repository root with the product installer, which the
+[installation
 guide](https://kanameishi.github.io/NGR/articles/cli.html#install)
-explains the macOS and Windows entries, package-only installation and
-the separate CLI destination. Runtime commands do not install
-dependencies. The repository is private; obtaining its development
-sources requires access.
+documents.
+
+Open the RStudio project inside `lib/` for package development.
 
 ## Usage
 
@@ -270,18 +269,18 @@ Pkgdown is configured by `_pkgdown.yml` and renders the articles in
 `vignettes/` and the R reference in `man/`. The public site is
 <https://kanameishi.github.io/NGR/>.
 
-Public articles:
+Public articles by family of the [function
+reference](https://kanameishi.github.io/NGR/reference/index.html):
 
-- [Command-line
-  interface](https://kanameishi.github.io/NGR/articles/cli.html).
-- [Quarto YAML
-  helpers](https://kanameishi.github.io/NGR/articles/quarto-yaml.html).
-- [Secondary Y
-  axis](https://kanameishi.github.io/NGR/articles/secondary-y-axis.html).
-- [Themes with
-  gridlines](https://kanameishi.github.io/NGR/articles/themes-gridlines.html).
-- [Typewriter web
-  fonts](https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html).
+| Family | Articles |
+|----|----|
+| Plotting | [buildPlot line and point layers](https://kanameishi.github.io/NGR/articles/build-plot.html); [Secondary Y axis in buildPlot()](https://kanameishi.github.io/NGR/articles/secondary-y-axis.html) |
+| Tables and report composition | [Dynamic QMD blocks](https://kanameishi.github.io/NGR/articles/dynamic-qmd-blocks.html) |
+| Project resources | [Scaffolds and shared builders](https://kanameishi.github.io/NGR/articles/scaffolds.html); [Command-line interface](https://kanameishi.github.io/NGR/articles/cli.html) |
+| Quarto rendering; Netlify publication | [Command-line interface](https://kanameishi.github.io/NGR/articles/cli.html) |
+| Quarto YAML helpers | [Quarto YAML helpers](https://kanameishi.github.io/NGR/articles/quarto-yaml.html) |
+| Highcharter themes | [Themes with gridlines](https://kanameishi.github.io/NGR/articles/themes-gridlines.html) |
+| Display utilities | [Typewriter web fonts](https://kanameishi.github.io/NGR/articles/adding-web-fonts-typewriter.html) |
 
 ## License
 
