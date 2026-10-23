@@ -39,3 +39,5 @@ jobs:
         with:
           branch: gh-pages
           folder: lib/docs
+          clean-exclude: |
+            books/**
