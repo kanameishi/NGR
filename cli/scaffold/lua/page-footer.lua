@@ -1,8 +1,9 @@
 -- page-footer.lua
--- Appends the SRK page footer to book/html output, built from metadata.
+-- Appends the page footer to book/html output, built from metadata.
 -- Same data-driven pattern as footer.lua (revealjs).
--- footer-title (default: title) and footer-meta (default:
--- "SRK Consulting © <footer-year|render year>").
+-- footer-title (default: the book or document title) and footer-meta, the
+-- identity NGR derives from params.yml or a declared footer-meta; without
+-- either, the footer carries only the title and the render stamp.
 
 local function stringify(v)
   return v and pandoc.utils.stringify(v) or ""
@@ -23,13 +24,9 @@ function Meta(meta)
   end
   if title_text == "" then title_text = stringify(meta.title) end
   meta_text = stringify(meta["footer-meta"])
-  if meta_text == "" then
-    local year = stringify(meta["footer-year"])
-    if year == "" then year = os.date("%Y") end
-    meta_text = "SRK Consulting © " .. year
-  end
   local stamp = pandoc.system.environment()["NGR_RENDER_STAMP"] or ""
-  if stamp ~= "" then meta_text = meta_text .. " · " .. stamp end
+  if stamp ~= "" and meta_text ~= "" then meta_text = meta_text .. " · " .. stamp end
+  if stamp ~= "" and meta_text == "" then meta_text = stamp end
 end
 
 function Pandoc(doc)

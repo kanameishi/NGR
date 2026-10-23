@@ -1,5 +1,5 @@
 Package: NGR
-Version: 0.4.0
+Version: 0.4.1
 Title: Next Generation Reporting
 Description: The NGR package provides comprehensive tools for generating professional and customizable reports in R. It offers advanced functions to create high-quality plots and well-formatted tables effortlessly. It streamlines the process of data visualization and presentation, allowing users to build detailed reports that combine insightful graphics and tables seamlessly. It integrates Quarto for multi-format rendering (HTML/PDF/DOCX) with configurable templates.
 License: MIT + file LICENSE
@@ -37,4 +37,4 @@ Maintainer: Alejandro Verri Kozlowski <averri@fi.uba.ar>
 Authors@R: 
     person("Alejandro", "Verri Kozlowski", , "averri@fi.uba.ar", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8535-1170"))
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

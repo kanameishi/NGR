@@ -7,8 +7,6 @@ project:
 book:
   language: en
   sidebar:
-    logo: styles/logo.png
-    logo-alt: SRK Consulting logo
     search: true
 
 format:
@@ -16,7 +14,6 @@ format:
     page-layout: article
     brand: styles/_brand.yml
     theme: styles/theme.scss
-    logo: styles/logo.png
     title-block-banner: true
     bread-crumbs: false
     filters:

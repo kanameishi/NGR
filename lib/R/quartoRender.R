@@ -116,14 +116,15 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
   }
   Book <- profile == "book" || (profile == "docx" && quartoHasBookManifest(Frontmatter))
   Config <- yaml::read_yaml("yml/_quarto.yml")
+  Params <- list()
+  if (file_test("-f", "params.yml")) Params <- yaml::read_yaml("params.yml")
   Command <- c("render", "--profile", profile, "--output-dir", "_ngr-output")
-  if (Book) {
-    Config <- quartoMergeBookManifest(base = Config, manifest = Frontmatter)
-    if (profile == "docx") {
-      quartoWriteYaml(quartoDocxBookProfile(DocxProfile),
-                      path = Profile)
-      Command <- c(Command, "--to", "docx", "--output", paste0(Stem, ".docx"))
-    }
+  if (Book) Config <- quartoMergeBookManifest(base = Config, manifest = Frontmatter)
+  Identity <- .quartoFooterMeta(params = Params, config = Config)
+  if (nzchar(Identity)) Config[["footer-meta"]] <- Identity
+  if (Book && profile == "docx") {
+    quartoWriteYaml(quartoDocxBookProfile(DocxProfile), path = Profile)
+    Command <- c(Command, "--to", "docx", "--output", paste0(Stem, ".docx"))
   }
   if (!Book) {
     if (grepl("/", input, fixed = TRUE)) {

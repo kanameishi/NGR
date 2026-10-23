@@ -1,20 +1,16 @@
-# Brand Configuration for Professional PSHA Reports
-# This file provides unified branding across HTML, Word, and RevealJS outputs
-
-meta:
-  name: "SRK Consulting"
-  link: "https://www.srk.com"
+# Brand of the rendered documents: palette, typography and Bootstrap defaults.
+# The identity printed in the page footer comes from params.yml or a declared
+# footer-meta (see lua/page-footer.lua), not from this file.
 
 color:
   palette:
-    # Primary brand colors
-    srk-blue: "#003366"          # Legacy SRK blue (deep navy)
-    srk-light-blue: "#0066CC"    # Secondary blue
-    srk-accent: "#FFB81C"        # Legacy accent (yellow)
+    # Primary colors
+    navy: "#003366"              # Deep navy
+    light-blue: "#0066CC"        # Secondary blue
+    accent-yellow: "#FFB81C"     # Accent (yellow)
 
-    # Corporate accents observed in Sample Report.docx
-    srk-header-orange: "#F37021" # Header/footer lines, footnote refs, hyperlinks
-    srk-heading-blue: "#0F4761"  # Dark blue used for some headings
+    orange: "#F37021"            # Header and footer lines, footnote marks, hyperlinks
+    heading-blue: "#0F4761"      # Dark blue for some headings
 
     # Neutral palette
     dark-gray: "#2C3E50"
@@ -37,10 +33,9 @@ color:
     light: "#FFFFFF"
     dark: "#1E1E1E"
 
-  primary: srk-blue
-  secondary: srk-light-blue
-  # Use the corporate orange as tertiary accent (headers, links, etc.)
-  tertiary: srk-header-orange
+  primary: navy
+  secondary: light-blue
+  tertiary: orange
 
   success: success-green
   info: info-blue
@@ -50,11 +45,6 @@ color:
   light: light-gray
   dark: dark-gray
 
-logo:
-  small: "styles/logo.png"
-  medium: "styles/logo.png"
-  large: "styles/logo.png"
-
 # NOTE: We deliberately avoid setting font families here so that the
 # Quarto/Bootstrap theme (e.g., simplex) controls typography. This section
 # is kept minimal and focused on link/mono tweaks if needed.
@@ -62,7 +52,6 @@ typography:
   fonts: []
 
   link:
-    # Use corporate orange for links
     color: tertiary
     decoration: none
 
@@ -80,7 +69,6 @@ defaults:
   # Bootstrap SCSS variable overrides
   $body-bg: background
   $body-color: foreground
-  # Base link color (will resolve to tertiary = srk-header-orange)
   $link-color: tertiary
   $headings-color: primary
   $headings-font-weight: 700

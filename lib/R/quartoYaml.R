@@ -82,9 +82,13 @@ quartoSetProjectRender <- function(base, render) {
 
 #' Merge QMD book-manifest frontmatter into Quarto YAML
 #'
-#' Merges qrt-style manifest fields (`title`, `chapters`, `appendices`,
-#' `bibliography`, and `lang`) into a parsed `_quarto.yml` list and sets `project.render` to
-#' the declared chapters plus appendices. `part:` entries are preserved in
+#' Merges qrt-style manifest fields (`title`, `author`, `chapters`,
+#' `appendices`, `bibliography`, `lang`, `language`, `toc-title`,
+#' `footer-title`, `footer-meta` and `crossref`) into a parsed `_quarto.yml`
+#' list and sets `project.render` to the declared chapters plus appendices.
+#' Scalar keys of the master replace the configuration; `crossref` is merged
+#' entry by entry over the configuration's block, so a master in another
+#' language overrides the shared `yml/` declarations. `part:` entries are preserved in
 #' `book.chapters`/`book.appendices` and flattened to their chapter files for
 #' `project.render`, which only accepts paths.
 #'
@@ -100,6 +104,7 @@ quartoMergeBookManifest <- function(base, manifest) {
 
   Book <- list()
   if (!is.null(Manifest$title)) Book$title <- Manifest$title
+  if (!is.null(Manifest$author)) Book$author <- Manifest$author
   if (!is.null(Manifest$chapters)) Book$chapters <- .quartoBookEntries(Manifest$chapters)
   if (!is.null(Manifest$appendices)) Book$appendices <- .quartoBookEntries(Manifest$appendices)
   if (length(Book) > 0L) Base$book <- Book
@@ -109,7 +114,25 @@ quartoMergeBookManifest <- function(base, manifest) {
 
   if (!is.null(Manifest$bibliography)) Base$bibliography <- Manifest$bibliography
   if (!is.null(Manifest$lang)) Base$lang <- Manifest$lang
+  for (Key in c("footer-title", "footer-meta", "toc-title", "language")) {
+    if (!is.null(Manifest[[Key]])) Base[[Key]] <- Manifest[[Key]]
+  }
+  if (is.list(Manifest$crossref)) {
+    Crossref <- if (is.list(Base$crossref)) Base$crossref else list()
+    Base$crossref <- utils::modifyList(Crossref, Manifest$crossref)
+  }
   Base
+}
+
+# Identity printed by lua/page-footer.lua. A declared footer-meta wins; otherwise
+# the author and the organisation of params.yml, joined; otherwise nothing, so
+# that no identity enters a document that declares none.
+.quartoFooterMeta <- function(params, config) {
+  Declared <- config[["footer-meta"]]
+  if (is.character(Declared) && length(Declared) == 1L && nzchar(trimws(Declared))) return(Declared)
+  Parts <- c(params$params$author, params$params$consultant$name)
+  Parts <- Parts[vapply(Parts, function(x) is.character(x) && length(x) == 1L && nzchar(trimws(x)), logical(1L))]
+  paste(Parts, collapse = ", ")
 }
 
 .quartoBookEntries <- function(chapters) {

@@ -43,6 +43,13 @@ without shelling out to qrt runtime scripts.
 \details{
 The helpers preserve single-entry sequence fields and serialize logical values as
 YAML 1.2 booleans (\code{true}/\code{false}) for Quarto compatibility.
+
+\code{quartoMergeBookManifest()} carries \code{title}, \code{author},
+\code{chapters}, \code{appendices}, \code{bibliography}, \code{lang},
+\code{language}, \code{toc-title}, \code{footer-title} and
+\code{footer-meta} from the book master into the configuration, and merges
+the master's \code{crossref} entries over the shared block, so a master in
+another language overrides the \code{yml/} declarations of the project.
 }
 \value{
 Lists for merge/transform helpers, a logical for \code{quartoHasBookManifest},

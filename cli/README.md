@@ -193,6 +193,16 @@ existing directories with `--no-build`; dry runs do not contact the provider.
 Preflight precedes batch mutations; a later failure can retain earlier completed
 effects.
 
+### Identity in the page footer
+
+Books and HTML documents print a page footer with the title and an identity
+line. NGR takes that line from `footer-meta` when the master or the project
+configuration declares it; otherwise from the project's `params.yml`, joining
+`params.author` and `params.consultant.name` with a comma; otherwise the footer
+carries the title and the render stamp only. The scaffold declares no logo and
+no corporate name: a project that needs them adds them to its own
+configuration.
+
 ### CAN Word reports
 
 The master supplies `title` and `lang`; English is used when `lang` is absent.

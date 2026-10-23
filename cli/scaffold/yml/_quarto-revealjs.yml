@@ -45,5 +45,4 @@ format:
     menu: true
     zoom: true
     title-slide: false
-    logo: styles/logo.png
     css: styles/styles.css

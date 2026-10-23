@@ -9,7 +9,6 @@ format:
     page-layout: article
     brand: styles/_brand.yml
     theme: styles/theme.scss
-    logo: styles/logo.png
     title-block-banner: true
     filters:
       - lua/page-footer.lua

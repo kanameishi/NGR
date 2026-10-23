@@ -1,3 +1,25 @@
+# NGR 0.4.1
+
+## Identity of the rendered documents
+
+* The page footer of books and HTML documents no longer carries a corporate
+  name by default. `quartoRender()` reads the project's `params.yml` and sets
+  `footer-meta` from `params.author` and `params.consultant.name`, joined by a
+  comma, unless the master or the project configuration declares `footer-meta`
+  itself. A project that declares neither renders a footer with the title and
+  the render stamp only. `lua/page-footer.lua` keeps no fallback identity.
+* `quartoMergeBookManifest()` carries `author`, `footer-title`,
+  `footer-meta`, `toc-title` and `language` from the book master into the
+  book configuration, and merges the master's `crossref` entries over the
+  shared block. A master in another language now overrides the `yml/`
+  declarations of the project instead of being silently ignored.
+* The scaffold ships without the corporate logo, logo text, brand name, brand
+  link and brand logo entries: `yml/_quarto-book.yml`, `yml/_quarto-html.yml`
+  and `yml/_quarto-revealjs.yml` declare no logo, and `styles/_brand.yml` keeps
+  only the palette, typography and Bootstrap defaults, with neutral palette
+  names. A project that wants a logo or a corporate footer declares them in its
+  own configuration or `params.yml`.
+
 # NGR 0.4.0
 
 ## Project resources, rendering and publication
