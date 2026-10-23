@@ -102,7 +102,7 @@ Rscript -e 'pkgdown::build_site("lib")'
 
 The current `.github/workflows/pkgdown.yaml` builds from `lib/` on pushes to
 `main` or manual dispatch and publishes `lib/docs/` to `gh-pages`. Pages serves
-that branch at `https://averrik.github.io/NGR/`; reference and articles use
+that branch at `https://kanameishi.github.io/NGR/`; reference and articles use
 `reference/` and `articles/`. There is no Jekyll portal or second documentation
 pipeline. App, skill and MCP folders remain reserved components.
 
