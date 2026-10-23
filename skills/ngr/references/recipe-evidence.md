@@ -1,8 +1,8 @@
 # Recipe evidence
 
 Use this recorded coverage when recommending commands or explaining whether a
-recipe has been accepted. The records target NGR 0.4.0; the command shares that version.
-They establish the operations and limits below, not every form documented in
+recipe has been accepted. The command shares the version of the NGR package.
+The records establish the operations and limits below, not every form documented in
 the operation references. Project-specific acceptance supplied for the task
 can establish additional coverage. If no matching acceptance is available,
 label that part of the proposed recipe as unverified for the requested scope;

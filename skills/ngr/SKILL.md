@@ -47,8 +47,8 @@ within the requested scope, preserving receipts and scientific data.
 For a render that must survive disconnection, or an attempt being resumed,
 also read [Long jobs](references/long-jobs.md).
 
-These instructions cover NGR 0.4.0; the command shares that version. Use them
-directly for
+`ngr --version` identifies the installed interface; the command shares the
+version of the NGR package. Use these instructions directly for
 the documented operations. If a command is unavailable or contradicts this
 contract, inspect `ngr --version` and that operation's `--help` to resolve the
 specific mismatch. Missing software is a prerequisite to report, not a reason
