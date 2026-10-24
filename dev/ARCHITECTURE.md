@@ -96,6 +96,25 @@ argument limits. The product acceptance `install/acceptance.R` pulls only
 `bib/apa.csl` into the temporary project of the installed-product test and
 checks its status and its bytes against the installed scaffold.
 
+## Console
+
+NGR follows the family logging ruling of 2026-10-24 (AOM `dev/ARCHITECTURE.md`,
+"Logging belongs to the CLIs"). The library signals `moduleNote`,
+`moduleProgress` and `moduleFailure` conditions through `.inform()` and
+`.fail()` of `lib/R/conditions.R`. `cli/main.R` reads `CLI_ARGS` and
+`CLI_RESOURCES` from `install/cli/entry.R`, writes results to stdout and leaves
+its errors to the renderer `install/cli/console.R`; `ngr deploy` without
+arguments writes its help with exit 0.
+
+Declared differences: Quarto and the checks a source declares run with the
+command's console, outside the renderer; the functions named in
+`documentWriters` of `install/requirements.R` write document text to stdout;
+the errors and warnings of the functions that the command's operations do not
+call (plots, tables and document writers) remain plain R warnings and errors,
+which the family table admits at the warning and failure levels; the closing
+`[pull]` line and the `doctor` report keep their bracketed form on stdout as
+results.
+
 ## Documentation and Pages
 
 Repositories are private by policy. GitHub Pages is the public documentation

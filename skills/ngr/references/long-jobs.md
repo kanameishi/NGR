@@ -28,6 +28,7 @@ duplicating a render. If it ended, reconcile final status with the delivered
 outputs and classify completed, failed, unattempted and unknown aliases.
 Preserve verified successes and continue only the unfinished authorized scope.
 
-The batch's `[render manifest] complete` indicates it passed its output
-existence checks. Apply the requested content and visual QA to the final tree
-before declaring the product accepted or performing a requested deploy.
+The batch's closing note `manifest complete` on stderr, or its exit status 0
+when `--quiet` hides that note, indicates it passed its output existence checks.
+Apply the requested content and visual QA to the final tree before declaring
+the product accepted or performing a requested deploy.

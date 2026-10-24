@@ -157,11 +157,18 @@ forms. Resource incorporation never publishes a site.
 
 ## Library operations
 
-The Bash, CMD and PowerShell launchers enter `cli/main.R`, which interprets the
-arguments and calls only exported functions of the installed NGR package.
-`ngr --help` and `ngr --version` work without the library; any other command
-names a missing library or one older than the version the CLI requires. Runtime
+The Bash, CMD and PowerShell launchers run `install/cli/entry.R`, which runs
+`cli/main.R`; `cli/main.R` interprets the arguments and calls only exported
+functions of the installed NGR package. `ngr --help` works without the library;
+any other command that cannot load the library writes its error line followed
+by the R version and the installed NGR version found, or `none`. Runtime
 commands do not install dependencies or load R code from the source checkout.
+
+Results go to stdout; notes, progress, warnings and errors go to stderr.
+`--quiet` hides notes and progress, `--verbose` adds the fields of each
+condition, and given together `--quiet` prevails. The exit status is 0 on
+success, 1 on failure or on drift found by `status --check`, 2 on invalid usage
+and 130 on interrupt.
 
 R consumers can call these operations without the CLI:
 

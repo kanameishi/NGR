@@ -170,10 +170,13 @@ manifest selection, draft/production, site creation, domains, TLS and DNS
 diagnostics. `deploy init` registers sites; it does not incorporate resources.
 See `ngr render --help` and `ngr deploy --help` for exact arguments.
 
-The single `cli/main.R` interprets the arguments, prints results and sets the
-exit status; every operation is an exported function of the installed NGR
-package, loaded through normal R library resolution. `--help` needs no
-library. The command and the installed NGR package share one version: a
+The launchers run the AOM-managed `install/cli/entry.R`, which consumes
+`--verbose` and `--quiet` placed before `--` and runs the single `cli/main.R`
+with the other arguments as `CLI_ARGS`. `cli/main.R` interprets them, writes
+results to stdout and returns the exit status of a completed command. Every
+operation is an exported function of the installed NGR package, loaded through
+normal R library resolution. `--help` needs no library.
+The command and the installed NGR package share one version: a
 command that needs the library names a missing one instead of failing inside
 it, and `ngr --version` reports the package version, the payload and the
 recorded build. `pull`, `status` and source checks use `NGR::pullResources()`,
@@ -193,6 +196,29 @@ forms `netlifyRegisterManifest()`, `netlifyDeployManifest()` and
 existing directories with `--no-build`; dry runs do not contact the provider.
 Preflight precedes batch mutations; a later failure can retain earlier completed
 effects.
+
+### Console
+
+stdout carries the results: the requested help, the version, the `pull` and
+`status` listings, the closing `[pull]` line and the `doctor` report. The
+library signals its notes and progress as R conditions of the classes
+`moduleNote` and `moduleProgress`, with the fields `operation`, `phase`, `unit`
+and `path`, and the deliberate failures of the functions the command calls as
+`moduleFailure`. Usage errors of `cli/main.R` have the class `ngrUsageError`,
+which inherits from `moduleUsage`. The renderer `install/cli/console.R` writes
+these conditions on stderr: `--quiet` hides notes and progress, `--verbose` adds
+the fields, and given together `--quiet` prevails. `doctor` writes each
+declared check as a progress line on stderr and its report on stdout. The
+output the Netlify CLI returns for an upload is written as a note on stderr.
+
+An error is written as `ngr: <message>`; an error without the class
+`moduleFailure` or `moduleUsage` adds the R version and the installed NGR
+version found, or `none`. The exit status is 0 on success, 1 on failure or on
+drift found by `status --check`, 2 on invalid usage and 130 on interrupt.
+
+Quarto and the checks a source declares run with the console of the command:
+their output goes to the command's stdout and stderr as they write it, and
+`--quiet` does not hide it.
 
 ### Identity in the page footer
 
