@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "model": "AOM",
-  "release": "0.5.6",
-  "sha256": "7c25a1f227b34e7279b1cb67fc75aa80a26310a63ecfa6f224ba07f4cc1c2cc0",
+  "release": "0.5.8",
+  "sha256": "9a0cf20ea465890c6a4b4e2a551cd712443041177f06617de24e7c0e77ca94da",
   "package": "NGR",
   "language": "R",
   "answers": null,
@@ -54,13 +54,18 @@
     },
     {
       "path": "install/cli/test-installers.ps1",
-      "sha256": "6ddb581217d899c2590206d02db4d8e243e717b05fe2f13bb87cc35fc7f0455d",
+      "sha256": "3fa6ab390ad912621cd3c09d0ebca7ca0706aa47dfc631a8967c06f61461f872",
       "mode": "0644"
     },
     {
       "path": "install/cli/test-installers.sh",
-      "sha256": "7acb87d0d2fdfb76bd384a4ad5c6236eb154286f01203e5fc3fce1696d8c9dbf",
+      "sha256": "9e591b3738b97f0b63408f3045d4056613c3fd559d7daee9794d3074b5d070f8",
       "mode": "0755"
+    },
+    {
+      "path": "install/cli/testConsole.R",
+      "sha256": "d2f75bcf38a0ebd43b5bd0499fc882a2307f1802ce87306758219c2300bd1da0",
+      "mode": "0644"
     },
     {
       "path": "install/cli/testDependencies.R",
@@ -79,7 +84,7 @@
     },
     {
       "path": "install/cli/testProduct.R",
-      "sha256": "344185cd2c890e97c141ae1cbdddc43771a3bd8e63177a5f90d13ecee9376a24",
+      "sha256": "ff3b1cd4082e603de6a2610ef428bbe9ca9291997b762ecfdb269c84a865b008",
       "mode": "0644"
     },
     {
@@ -134,17 +139,22 @@
     },
     {
       "path": "install/USAGE.md",
-      "sha256": "e18bdf825ead7d26a44c8a8a39f216bf572f9a4aae7a550bb970134aa47e3eb5",
+      "sha256": "8d7d51cb6f277b45bbe5ac585621c66ebdc24107616f14732b81e1dde145b9e0",
       "mode": "0644"
     },
     {
       "path": "install/cli/manifest.R",
-      "sha256": "9a378a049ac586eef374a87cdd50b50849933d8d9f210771d7d1a1696f344fcd",
+      "sha256": "f83386b2c67e6e113d82cb915440403a55618848c1a8e33c20241e2dcfadb2b1",
       "mode": "0644"
     },
     {
       "path": "install/cli/entry.R",
-      "sha256": "18633b884da252be408573bdc76f3998f3aeaa515f344928c2150911a6c46a47",
+      "sha256": "c029f93295949a99d997bdf83b2e2ed86c0a35576d9ae2fe138a97a9443fb01a",
+      "mode": "0644"
+    },
+    {
+      "path": "install/cli/console.R",
+      "sha256": "e47d6d75585611e30506b1a75f156b81efbb1b751c29004e8edc544bf36adb9f",
       "mode": "0644"
     },
     {

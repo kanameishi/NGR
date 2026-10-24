@@ -88,6 +88,28 @@ Removal works without the source checkout. Supply the chosen `--prefix` again;
 target. The final notice reports the historical package library from the receipt
 (or unknown if absent). It never removes an R package.
 
+## Console
+
+The launcher runs `install/cli/entry.R`. It consumes `--verbose` and
+`--quiet` placed before `--` and passes the other arguments to the product's
+`cli/main.R` as `CLI_ARGS`.
+It loads the managed renderer `install/cli/console.R` only when its bytes
+match the receipt and evaluates `main.R` under the renderer's handlers.
+
+stdout carries results. The renderer writes on stderr the classed conditions
+the library signals: `moduleNote`, `moduleProgress` and `moduleDetail`
+messages, warnings and errors. On a terminal it starts each condition with a
+symbol (`i`, `>`, `.`, `!` or `x`), coloured unless `NO_COLOR` is set and not
+empty; off a terminal it writes the text alone, with `warning: ` before a
+warning. A message without one of those classes keeps R's default output.
+`--quiet` hides notes, progress and detail; `--verbose` shows detail and the
+fields `operation`, `phase`, `unit`, `path`, `count` and `total`; given
+together, `--quiet` prevails. An error is
+written as `<command>: <message>`; an error without the class `moduleFailure`
+or `moduleUsage` adds the R version and the package found. An error exits
+with 2 for `moduleUsage`, with the `status` field of the error when it
+carries one, and with 1 otherwise; an interrupt exits with 130.
+
 ## Windows
 
 ```powershell
@@ -116,6 +138,10 @@ Path <- Sys.getenv("NGR_COMMAND_PATH", unset = NA_character_)
 if (!is.na(Path)) Sys.setenv(PATH = Path)
 Sys.unsetenv("NGR_COMMAND_PATH")
 ```
+
+`documentWriters`, optional, names the library functions whose standard
+output is a document; `aom verify` does not report their `cat()` and
+`print()` calls.
 
 `manifest.json` version 2 explicitly records product/package origin, source,
 installed destination (product files only), optional module target, ownership

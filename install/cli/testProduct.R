@@ -32,6 +32,14 @@ runChecks <- function(root, library) {
     if (Status != status) stop(paste(OUT, collapse = "\n"))
     OUT
   }
+  # Results and the renderer's lines apart, for the stream checks of the acceptance.
+  runStreams <- function(command, args, status = 0L) {
+    Streams <- tempfile(c("stdout-", "stderr-"), tmpdir = Work)
+    Status <- system2(command, shQuote(args), stdout = Streams[1L], stderr = Streams[2L])
+    OUT <- lapply(stats::setNames(Streams, c("stdout", "stderr")), readLines, warn = FALSE)
+    if (Status != status) stop(paste(unlist(OUT), collapse = "\n"))
+    OUT
+  }
   runEntry <- function(name, args, status = 0L, libraryPath = library) {
     if (Windows) return(runCommand("powershell.exe", c("-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
       file.path(root, "install", paste0(name, ".ps1")), "-Yes", "-NoPath", "-Library", libraryPath, "-Prefix", Prefix, args), status = status))

@@ -21,7 +21,8 @@
     Removal <- c("lib/DESCRIPTION", "install/requirements.R", "install/manifest.json",
       "install/uninstall.sh", "install/uninstall.ps1", "install/cli/manage.R",
       "install/cli/checkPaths.ps1", "install/cli/publish.sh", "install/cli/r.sh",
-      "install/cli/r.ps1", "install/cli/verify.R", "install/cli/manifest.R", "install/cli/entry.R")
+      "install/cli/r.ps1", "install/cli/verify.R", "install/cli/manifest.R", "install/cli/entry.R",
+      "install/cli/console.R")
     Manifest$files <- c(Manifest$files, lapply(Removal, function(path) {
       list(origin = "product", source = path, installed = path, kind = "runtime",
            mode = if (endsWith(path, ".sh")) "0755" else "0644")

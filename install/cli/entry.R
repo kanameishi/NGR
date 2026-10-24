@@ -3,8 +3,12 @@ local({
   if (length(File) != 1L) stop("Run the installed command through its launcher")
   File <- gsub("~+~", " ", sub("^--file=", "", File), fixed = TRUE)
   CLI_RESOURCES <- normalizePath(file.path(dirname(File), "../.."), winslash = "/", mustWork = TRUE)
+  Args <- commandArgs(TRUE)
+  # The console flags count only before `--`; main.R reads the other arguments from CLI_ARGS.
+  Flags <- Args %in% c("--verbose", "--quiet") & seq_along(Args) < match("--", Args, nomatch = length(Args) + 1L)
+  CLI_ARGS <- Args[!Flags]
   # AOM's installation diagnostic must remain reachable when its package cannot load.
-  Doctor <- identical(commandArgs(TRUE), "doctor") && identical(basename(CLI_RESOURCES), "AOM")
+  Doctor <- identical(CLI_ARGS, "doctor") && identical(basename(CLI_RESOURCES), "AOM")
   OUT <- tryCatch({
     Record <- jsonlite::read_json(file.path(CLI_RESOURCES, "install.json"))
     if (!is.null(Record$binding) || Doctor) {
@@ -17,7 +21,7 @@ local({
         loadNamespace(Record$package$name, lib.loc = Record$package$library)
       }
     }
-    if (Doctor) .doctorProduct(CLI_RESOURCES) else source(file.path(CLI_RESOURCES, "main.R"), local = TRUE)
+    if (Doctor) .doctorProduct(CLI_RESOURCES)
   }, error = function(e) {
     if (!Doctor) stop(e)
     list(schema = 1L, package = "AOM", summary = list(status = "fail", ok = 0L, fail = 1L, skipped = 0L),
@@ -31,4 +35,16 @@ local({
     writeLines(jsonlite::toJSON(OUT, auto_unbox = TRUE, pretty = TRUE, null = "null"))
     quit(save = "no", status = if (identical(OUT$summary$status, "ok")) 0L else 1L)
   }
+  # The renderer runs only with the bytes its installation recorded, bound or not.
+  Renderer <- file.path("libexec", basename(CLI_RESOURCES), "install/cli/console.R")
+  if (!identical(unname(tools::md5sum(file.path(CLI_RESOURCES, "install/cli/console.R"))),
+                 unlist(Record$md5)[match(Renderer, unlist(Record$file))])) stop("Installed console renderer hash mismatch")
+  source(file.path(CLI_RESOURCES, "install/cli/console.R"), local = TRUE)
+  # The command is the one install/requirements.R declares, as the installer recorded it.
+  Console <- .consoleHandlers(command = sub("-cli$", "", Record$product), package = Record$package$name,
+                              verbose = "--verbose" %in% Args[Flags], quiet = "--quiet" %in% Args[Flags],
+                              terminal = isatty(stderr()), colour = !nzchar(Sys.getenv("NO_COLOR")))
+  # R tries the most recent handlers first: those main.R establishes act before the renderer's.
+  tryCatch(withCallingHandlers(source(file.path(CLI_RESOURCES, "main.R"), local = TRUE),
+    message = Console$message, warning = Console$warning), error = Console$error, interrupt = Console$interrupt)
 })
