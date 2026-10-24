@@ -81,8 +81,9 @@ target contract; migration and Windows/macOS acceptance must be verified
 independently of this document.
 
 The R package builds from `lib/` without sibling directories. CLI/app consumers
-use the installed package. `lib/inst/` is only for package runtime resources,
-never repository installation/development/release scripts. Installing software
+use the installed package. `lib/inst/` is for package runtime resources and the
+library's autonomous installation and maintenance scripts; the module installer
+delegates library installation to `lib/inst/install.R`. Installing software
 does not publish Pages/CRAN, mutate Git or migrate project data.
 
 ## Documentation and Pages
