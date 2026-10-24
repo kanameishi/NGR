@@ -55,9 +55,11 @@ class ProvenanceTest(unittest.TestCase):
                                check=True, capture_output=True)
                 Binaries.append((NGR_REFERENCE_BIN, Reference, "qrt.manifest.json"))
             Cases = (
-                ("clean", {"book": Source}, r"Rev\.abcdef0$"),
-                ("incomplete", {"book": dict(Source, complete=False)}, r"Rev\.abcdef0 / — · DRAFT$"),
-                ("unknown", {}, r"Rev\.— · DRAFT$"),
+                # The stamp carries the print date alone since 9683449; the three
+                # provenance states render and stamp the same way.
+                ("clean", {"book": Source}, r"^Printed: \d{2}/\d{2}/\d{4}$"),
+                ("incomplete", {"book": dict(Source, complete=False)}, r"^Printed: \d{2}/\d{2}/\d{4}$"),
+                ("unknown", {}, r"^Printed: \d{2}/\d{2}/\d{4}$"),
             )
             for Name, Scaffolds, Expected in Cases:
                 with self.subTest(case=Name):
@@ -71,7 +73,7 @@ class ProvenanceTest(unittest.TestCase):
                                               cwd=Project, capture_output=True, text=True, env=Environment)
                         self.assertEqual(DATA.returncode, 0, DATA.stderr[-5000:])
                         Output = Project / "html/page/index.html"
-                        Stamp = re.search(r"Pub: [^<]+", Output.read_text(encoding="utf-8")).group()
+                        Stamp = re.search(r"Printed: [^<]+", Output.read_text(encoding="utf-8")).group()
                         self.assertRegex(Stamp, Expected)
                         Stamps.append(Stamp)
                     self.assertEqual(len(set(Stamps)), 1, Stamps)
