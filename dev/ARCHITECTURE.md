@@ -1,12 +1,12 @@
 # Repository architecture
 
-The owner-selected [installation policy](../install/README.md) governs all installation and package tooling.
+The family policy of the AOM model governs installation and package tooling; the [installation policy](../install/README.md) applies it to NGR.
 
 | Folder | Ownership |
 | --- | --- |
 | `lib/` | Independently buildable R package, APIs, help, vignettes, tests and runtime resources |
 | `cli/` | Shared `main.R` command entry, minimal platform launchers and operational resources |
-| `install/` | macOS/Linux and Windows entry points; library/dependency/CLI installers; package checks and CRAN/release tooling |
+| `install/` | macOS/Linux and Windows entry points; AOM-managed product installer and CLI publisher; product declarations and installation tests |
 | `app/`, `skill/`, `mcp/` | Their implemented components; reserved directories are not installable products |
 | `lib/vignettes/`, `lib/man/` | Public articles and R reference, published by pkgdown |
 | `dev/` | Live continuity state, this document, open defects and zipped legacy; see [dev/ maintenance](#dev-maintenance) |
@@ -73,12 +73,12 @@ history in the cited commits.
 
 ## Installation and package lifecycle
 
-Public entries are `install/install.sh` and `install/install.ps1`. All installation
-and package lifecycle helpers belong under `install/`, with explicit, separate
-operations for dependencies, installation, documentation, build, checks and publication.
-Each helper has one maintained implementation under `install/`. This is the
-target contract; migration and Windows/macOS acceptance must be verified
-independently of this document.
+Public entries are `install/install.sh` and `install/install.ps1`. `install/`
+holds the product installer that AOM manages; the library's installation and
+maintenance scripts run from `lib/` and do not depend on it. Dependencies,
+installation, documentation, build, checks and publication remain explicit,
+separate operations. Windows/macOS acceptance must be verified independently of
+this document.
 
 The R package builds from `lib/` without sibling directories. CLI/app consumers
 use the installed package. `lib/inst/` is for package runtime resources and the

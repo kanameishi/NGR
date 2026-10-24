@@ -1,28 +1,23 @@
 # Installation policy
 
-Owner instruction, 2026-09-16: all installation tools belong in `install/`,
-including R libraries, dependencies, CLI and CRAN tooling, with macOS and
-Windows entry points.
-
 ## Location and ownership
 
 | Location | Responsibility |
 | --- | --- |
 | `install/install.sh` | Public installation entry for macOS/Linux |
 | `install/install.ps1` | Public installation entry for Windows, invoked with PowerShell |
-| `install/` | Shared installation helpers, R dependency/package installation, component installation/update/removal, receipts and installation tests |
-| `install/` | Package tooling: prepare dependencies, document, build, check exact artifacts, and explicit CRAN/R-hub release operations |
+| `install/` | AOM-managed product installer and CLI publisher, product declarations and installation tests |
 | `lib/` | Independently buildable R package and public APIs |
+| `lib/inst/` | Package runtime resources and the library's autonomous installation and maintenance scripts |
 | `cli/` | CLI payload, argument adapter and operational resources/tests |
 | `lib/vignettes/`, `lib/man/` | Public documentation sources rendered by pkgdown |
 
-There is one owner for each installer/helper, under `install/`. Move and
-reuse the existing implementations without keeping duplicate versions.
-Preserve executable behavior, callers and tests while migrating paths.
+The module installer installs the complete product by calling
+`installLibrary()` from `lib/inst/install.R` and handling the CLI. The
+maintenance scripts in `lib/inst/` run from `lib/` and do not depend on
+`install/`; [MAINTENANCE.md](MAINTENANCE.md) describes them.
 
-`lib/inst/` may contain resources needed by the installed R package. It must
-not contain repository installation, development or release tooling. `install/`
-does not enter the R package. The CLI receipt owns a minimal
+`install/` does not enter the R package. The CLI receipt owns a minimal
 removal bundle under its runtime; it contains no package implementation or
 release tooling.
 
@@ -78,8 +73,7 @@ No fallback to a different destination after a permission failure.
 ## Separate effects
 
 Installation, documentation generation, build, package checks, CRAN submission,
-R-hub dispatch and Pages publication are separate explicit operations, even
-though their package/installation tools share `install/`.
+R-hub dispatch and Pages publication are separate explicit operations.
 CRAN tooling location does not authorize automatic submission, publication,
 Git changes, credentials, OS-level installation or project-data migration.
 
@@ -88,11 +82,8 @@ options/logs/results, expose errors and warnings, leave NOTEs for review and
 never reuse a passed record after a failed or interrupted check. Contextual
 CRAN review complements those checks; it does not replace them.
 
-Preserve the existing installation, documentation, package-test, checker and
-submission controls when moving them. Inventory each entry and its callers
-before replacement, then prove that its safeguards still execute. Do not
-replace the maintained workflow with a bare R CMD check. Submission is a
-separate explicit operation: identify its actual implementation and its input
+Do not replace the maintained workflow with a bare R CMD check. Submission is
+a separate explicit operation: identify its actual implementation and its input
 artifact, retain the receipt and do not retry an uncertain upload. Moving a
 submitter does not authorize changing or executing it.
 
@@ -103,7 +94,7 @@ CLI installation does not undo an R installation. Preserve recovery evidence
 when restoration is uncertain. Keep QRT/PSHA/SPT references until their owner
 explicitly retires them.
 
-## Acceptance and migration status
+## Acceptance
 
 Validate the installed interfaces outside the checkout, including package/API
 identity, a representative operation, missing dependencies, compatible
@@ -111,11 +102,8 @@ dependency preservation, file conflicts, update/removal and failure handling.
 Exercise paths with spaces and Unicode, argument forwarding and exit status
 on the actual supported platforms. Record macOS and Windows results separately.
 
-This file defines the required policy. It does not certify that the current
-scripts have completed migration or that Windows tests have passed. Before
-declaring completion, migrate callers/manuals/tests to `install/`, remove the
-superseded implementation paths and verify the installed product. Repository
-sources remain private; public help links use Pages.
+This file defines the required policy. It does not certify that Windows tests
+have passed. Repository sources remain private; public help links use Pages.
 
 ## NGR migration status
 
@@ -130,4 +118,5 @@ The installed-interface check pulls only the declared `bib/apa.csl` resource
 into a temporary project and verifies status and bytes. It does not render,
 contact Netlify or publish. Existing scaffold/release acceptance is separate.
 
-See [USAGE.md](USAGE.md) for the common installation and removal contract.
+See [USAGE.md](USAGE.md) for the common installation and removal contract and
+[MAINTENANCE.md](MAINTENANCE.md) for the maintenance of the R package.
