@@ -12,10 +12,10 @@
 quartoReadFrontmatter <- function(path) {
   Path <- as.character(path)
   if (length(Path) != 1L || !nzchar(Path)) {
-    stop("quartoReadFrontmatter: path must be one non-empty value.", call. = FALSE)
+    .fail("quartoReadFrontmatter: path must be one non-empty value.")
   }
   if (!file.exists(Path)) {
-    stop("quartoReadFrontmatter: file not found: ", Path, call. = FALSE)
+    .fail("quartoReadFrontmatter: file not found: ", Path)
   }
 
   Lines <- readLines(Path, warn = FALSE)
@@ -170,7 +170,7 @@ quartoDocxBookProfile <- function(profile) {
   Profile$project$type <- "book"
 
   if (is.null(Profile$format) || is.null(Profile$format$docx)) {
-    stop("quartoDocxBookProfile: profile does not define format.docx.", call. = FALSE)
+    .fail("quartoDocxBookProfile: profile does not define format.docx.")
   }
 
   Profile
@@ -209,7 +209,7 @@ quartoWriteYaml <- function(x, path = NULL) {
 
   Path <- as.character(path)
   if (length(Path) != 1L || !nzchar(Path)) {
-    stop("quartoWriteYaml: path must be one non-empty value.", call. = FALSE)
+    .fail("quartoWriteYaml: path must be one non-empty value.")
   }
   cat(Yaml, file = Path)
   invisible(Path)
@@ -218,7 +218,7 @@ quartoWriteYaml <- function(x, path = NULL) {
 .quartoRequireList <- function(x, name) {
   if (is.null(x)) return(list())
   if (!is.list(x)) {
-    stop(sprintf("%s must be a list.", name), call. = FALSE)
+    .fail(sprintf("%s must be a list.", name))
   }
   x
 }

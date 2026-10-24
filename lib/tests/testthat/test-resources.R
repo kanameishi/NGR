@@ -80,11 +80,11 @@ test_that("declared checks use argument vectors and restore the caller directory
   jsonlite::write_json(Manifest, Fixture$manifest, auto_unbox = TRUE)
   pullResources(from = Fixture$manifest, root = Fixture$project)
   WD <- getwd()
-  expect_message(Result <- checkResources(root = Fixture$project), "fixture")
+  expect_message(Result <- checkResources(root = Fixture$project), "^fixture: ", class = "moduleProgress")
   expect_identical(Result[[1L]]$status, 0L)
   expect_identical(getwd(), WD)
   writeLines('stop("declared failure")', Script)
-  expect_error(suppressMessages(checkResources(root = Fixture$project)), "Source check failed")
+  expect_error(suppressMessages(checkResources(root = Fixture$project)), "Source check failed", class = "moduleFailure")
   expect_identical(getwd(), WD)
 })
 
@@ -168,7 +168,7 @@ test_that("artifact seeds resolve {project_id} once the project declares its own
                            siteSlug = "{project_id}-toc", domain = "{project_id}-toc.example.org"))),
     Fixture$manifest, auto_unbox = TRUE)
   Manifest <- file.path(Fixture$project, "manifest.json")
-  expect_message(pullResources(from = Fixture$manifest, root = Fixture$project), "project_id")
+  expect_message(pullResources(from = Fixture$manifest, root = Fixture$project), "^artifacts not seeded", class = "moduleNote")
   expect_identical(jsonlite::fromJSON(Manifest, simplifyVector = FALSE)$artifacts, list())
   expect_message(pullResources(root = Fixture$project), "project_id")
   expect_identical(jsonlite::fromJSON(Manifest, simplifyVector = FALSE)$artifacts, list())

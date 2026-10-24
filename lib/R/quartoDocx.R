@@ -19,13 +19,13 @@
       Source <- paste0(Name, " in the DOCX master")
       if (Name %in% names(Keys)) Source <- paste0(Keys[[Name]], " in params.yml")
       if (Name == "date") Source <- "date in the render stamp"
-      stop("DOCX requires ", Source, " as a non-empty single-line string.", call. = FALSE)
+      .fail("DOCX requires ", Source, " as a non-empty single-line string.")
     }
   }
   Language <- frontmatter$lang
   if (is.null(Language)) Language <- "en"
   if (!is.character(Language) || length(Language) != 1L || is.na(Language) || !grepl("^(en|es)(-|$)", Language)) {
-    stop("DOCX master lang must be en or es (a regional suffix is allowed).", call. = FALSE)
+    .fail("DOCX master lang must be en or es (a regional suffix is allowed).")
   }
   Cover <- list(title = Values$title, client = Values$client, company = Values$company,
                 issue = Values$project, date = Values$date)
@@ -40,8 +40,8 @@
       if (!(is.list(x) || is.character(x)) || any(!vapply(x, function(s) {
         is.character(s) && length(s) == 1L && !is.na(s) && !grepl("[[:cntrl:]]", s)
       }, logical(1L)))) {
-        stop("Invalid params.", Name, ".", Field, " in params.yml: expected single-line text",
-             if (Field == "address") " entries." else ".", call. = FALSE)
+        .fail("Invalid params.", Name, ".", Field, " in params.yml: expected single-line text",
+              if (Field == "address") " entries." else ".")
       }
       if (Field == "address") TitlePage[[paste0(Key, "Address")]] <- as.list(x)
       if (Field == "web") TitlePage[[paste0(Key, "Web")]] <- x[[1L]]
@@ -57,7 +57,7 @@
     Path <- normalizePath(FILE, winslash = "/", mustWork = TRUE)
     Root <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
     if (!startsWith(Path, paste0(Root, "/"))) {
-      stop("Appendix resolves outside the staged project: ", FILE, call. = FALSE)
+      .fail("Appendix resolves outside the staged project: ", FILE)
     }
     Json <- tempfile("ngr-appendix-", fileext = ".json")
     on.exit(unlink(Json), add = TRUE)
@@ -65,18 +65,19 @@
     DATA <- jsonlite::fromJSON(Json, simplifyVector = FALSE)$blocks
     Headers <- Filter(function(x) identical(x$t, "Header") && identical(x$c[[1L]], 1L), DATA)
     if (length(Headers) != 1L || !nzchar(Headers[[1L]]$c[[2L]][[1L]])) {
-      stop("Each appendix file requires one level-1 heading with an explicit identifier: ", FILE, call. = FALSE)
+      .fail("Each appendix file requires one level-1 heading with an explicit identifier: ", FILE)
     }
     if ("unnumbered" %in% unlist(Headers[[1L]]$c[[2L]][[2L]])) {
-      stop("Appendix heading must be numbered so Quarto can resolve its letter and references: ", FILE, call. = FALSE)
+      .fail("Appendix heading must be numbered so Quarto can resolve its letter and references: ", FILE)
     }
     OUT[[length(OUT) + 1L]] <- list(bookmark = Headers[[1L]]$c[[2L]][[1L]])
     unlink(Json)
   }
   Ids <- vapply(OUT, function(x) x$bookmark, character(1L))
-  if (anyDuplicated(Ids)) stop("Appendix heading identifiers must be unique.", call. = FALSE)
+  if (anyDuplicated(Ids)) .fail("Appendix heading identifiers must be unique.")
   if (!length(OUT) && quartoHasBookManifest(frontmatter)) {
-    message("[render] DOCX book: no appendices declared; CAN separators require appendices in the master.")
+    .inform("moduleNote", "DOCX book: no appendices declared; CAN separators require appendices in the master.",
+            operation = "render", phase = "docx")
   }
   OUT
 }
@@ -84,15 +85,15 @@
 .docxProfile <- function(profile, module, python) {
   Reference <- profile$format$docx$`reference-doc`
   if (!is.character(Reference) || length(Reference) != 1L || !nzchar(Reference)) {
-    stop("DOCX profile requires an explicit CAN-compatible reference-doc.", call. = FALSE)
+    .fail("DOCX profile requires an explicit CAN-compatible reference-doc.")
   }
   Filters <- unlist(profile$format$docx$filters, use.names = FALSE)
   if (any(grepl("(^|/)appendix-style[.]lua$", Filters))) {
-    stop("The DOCX profile still uses appendix-style.lua. Migrate yml/_quarto-docx.yml before rendering CAN.", call. = FALSE)
+    .fail("The DOCX profile still uses appendix-style.lua. Migrate yml/_quarto-docx.yml before rendering CAN.")
   }
   .runRenderCommand(python, args = c(module, "check-reference", "--reference", Reference))
   if (!isTRUE(profile$format$docx$`number-sections`)) {
-    stop("CAN DOCX requires number-sections: true; Quarto owns heading and cross-reference numbers.", call. = FALSE)
+    .fail("CAN DOCX requires number-sections: true; Quarto owns heading and cross-reference numbers.")
   }
   profile$format$docx$filters <- c(profile$format$docx$filters, list(
     list(at = "pre-quarto", path = system.file("docx", "styles.lua", package = "NGR", mustWork = TRUE)),

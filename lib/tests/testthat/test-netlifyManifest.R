@@ -23,18 +23,30 @@ test_that("manifest registration and domains check their claims across the whole
   on.exit(unlink(Fixture$root, recursive = TRUE), add = TRUE)
   writeArtifacts(Fixture)
   expect_message(OUT <- netlifyRegisterManifest("manifest.json", root = Fixture$root, only = "two", dryRun = TRUE),
-                 "INIT two siteSlug=site-two")
+                 "^two siteSlug=site-two", class = "moduleNote")
   expect_identical(OUT, c(two = "site-two"))
   expect_message(netlifyDomainManifest("manifest.json", root = Fixture$root, except = "one", dryRun = TRUE),
-                 "DOMAIN two domain=two.example.invalid")
+                 "^two domain=two.example.invalid", class = "moduleProgress")
   Fixture$artifacts[[2L]]$siteSlug <- "site-one"
   writeArtifacts(Fixture)
   expect_error(netlifyRegisterManifest("manifest.json", root = Fixture$root, only = "one", dryRun = TRUE),
-               "Duplicate siteSlug")
+               "Duplicate siteSlug", class = "moduleFailure")
   Fixture$artifacts[[2L]]$siteSlug <- NULL
   writeArtifacts(Fixture)
   expect_error(netlifyRegisterManifest("manifest.json", root = Fixture$root, dryRun = TRUE), "requires siteSlug")
-  expect_message(netlifyRegisterManifest("manifest.json", root = Fixture$root, only = "one", dryRun = TRUE), "INIT one")
+  expect_message(netlifyRegisterManifest("manifest.json", root = Fixture$root, only = "one", dryRun = TRUE), "^one siteSlug",
+                 class = "moduleNote")
+})
+
+test_that("a dry-run registration signals its plan as a family note with its fields", {
+  Fixture <- manifestFixture()
+  on.exit(unlink(Fixture$root, recursive = TRUE), add = TRUE)
+  writeArtifacts(Fixture)
+  Note <- tryCatch(netlifyRegisterManifest("manifest.json", root = Fixture$root, only = "two", dryRun = TRUE),
+                   message = function(m) m)
+  expect_s3_class(Note, "moduleNote")
+  expect_identical(conditionMessage(Note), "two siteSlug=site-two create=FALSE\n")
+  expect_identical(Note[c("operation", "phase", "unit")], list(operation = "deploy", phase = "init", unit = "two"))
 })
 
 test_that("manifest publication skips optional missing sites and fails required ones", {
@@ -43,7 +55,7 @@ test_that("manifest publication skips optional missing sites and fails required 
   on.exit(unlink(Fixture$root, recursive = TRUE), add = TRUE)
   writeArtifacts(Fixture)
   expect_message(OUT <- netlifyDeployManifest("manifest.json", root = Fixture$root, dryRun = TRUE),
-                 "SKIP deploy two optional missing path=html/two")
+                 "^skip two optional missing path=html/two", class = "moduleNote")
   expect_identical(names(OUT), "one")
   Fixture$artifacts[[2L]]$required <- TRUE
   writeArtifacts(Fixture)

@@ -336,7 +336,7 @@ buildYAML <- function(
       recursive = TRUE,
       overwrite = TRUE
     )
-    message("Copied _extensions folder to current directory!")
+    .inform("moduleNote", "Copied _extensions folder to current directory!", operation = "buildYAML")
   }
 
   # 2) Now copy all other support files/folders into build_dir
@@ -357,7 +357,7 @@ buildYAML <- function(
       recursive = TRUE,
       overwrite = TRUE
     )
-    message("Project structure initialized successfully in build_dir!")
+    .inform("moduleNote", "Project structure initialized successfully in build_dir!", operation = "buildYAML")
   }
 
   # Always refresh the publish_dir so it's guaranteed to be clean
@@ -373,7 +373,7 @@ buildYAML <- function(
 
     
   }, error = function(e) {
-    message("Error during rendering: ", e$message)
+    .inform("moduleNote", "Error during rendering: ", e$message, operation = "buildYAML")
     .postRender()
     stop(e)
   })

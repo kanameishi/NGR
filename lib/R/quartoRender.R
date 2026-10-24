@@ -47,31 +47,31 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
                          args = character(), manifest = "manifest.json") {
   for (x in list(input, profile, root, manifest)) {
     if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-      stop("Input, profile, root and manifest must be non-empty strings.", call. = FALSE)
+      .fail("Input, profile, root and manifest must be non-empty strings.")
     }
   }
   if (!profile %in% c("book", "html", "revealjs", "docx")) {
-    stop("Unknown render profile: ", profile, call. = FALSE)
+    .fail("Unknown render profile: ", profile)
   }
   if (!is.character(args) || anyNA(args)) {
-    stop("Quarto arguments must be a character vector without missing values.", call. = FALSE)
+    .fail("Quarto arguments must be a character vector without missing values.")
   }
   Root <- normalizePath(root, winslash = "/", mustWork = TRUE)
   if (.Platform$OS.type == "windows") input <- gsub("\\", "/", input, fixed = TRUE)
   if (grepl("^(/|[A-Za-z]:)", input)) {
-    stop("Input must be project-relative: ", input, call. = FALSE)
+    .fail("Input must be project-relative: ", input)
   }
   input <- sub("^(\\./)+", "", input)
   Stem <- sub("\\.md$", "", sub("\\.qmd$", "", basename(input)))
   if (!nzchar(Stem) || Stem %in% c(".", "..")) {
-    stop("Cannot derive an output name from: ", input, call. = FALSE)
+    .fail("Cannot derive an output name from: ", input)
   }
   if (is.null(output)) output <- if (profile == "docx") "docx" else paste0("html/", Stem)
   .checkRenderOutput(profile = profile, output = output)
   Profile <- paste0("_quarto-", profile, ".yml")
   for (FILE in c(input, "yml/_quarto.yml", file.path("yml", Profile))) {
     if (!file_test("-f", file.path(Root, FILE))) {
-      stop("Render input not found: ", FILE, call. = FALSE)
+      .fail("Render input not found: ", FILE)
     }
   }
 
@@ -90,12 +90,12 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
   Frontmatter <- list()
   if (profile %in% c("book", "docx")) Frontmatter <- quartoReadFrontmatter(input)
   if (profile == "docx") {
-    if (!file_test("-f", "params.yml")) stop("DOCX metadata file not found: params.yml", call. = FALSE)
+    if (!file_test("-f", "params.yml")) .fail("DOCX metadata file not found: params.yml")
     Spec <- .docxSpec(Frontmatter, params = yaml::read_yaml("params.yml"),
                       date = sub("^Printed: ", "", RenderStamp), fileName = paste0(Stem, ".docx"))
   }
   Stage <- tempfile("ngr-render-")
-  if (!dir.create(Stage)) stop("Cannot create render directory: ", Stage, call. = FALSE)
+  if (!dir.create(Stage)) .fail("Cannot create render directory: ", Stage)
   on.exit(fs::dir_delete(Stage), add = TRUE)
   for (FILE in list.files(Root, all.files = TRUE, no.. = TRUE)) {
     if (FILE %in% c("html", "docx", ".quarto", "_freeze", "_ngr-output", ".git",
@@ -131,26 +131,26 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
       DIR <- normalizePath(dirname(input), winslash = "/", mustWork = TRUE)
       Path <- normalizePath(Stage, winslash = "/", mustWork = TRUE)
       if (DIR != Path && !startsWith(DIR, paste0(Path, "/"))) {
-        stop("Input resolves outside the project: ", input, call. = FALSE)
+        .fail("Input resolves outside the project: ", input)
       }
       FILE <- basename(input)
       if (file.exists(FILE) || isTRUE(fs::is_link(FILE))) {
-        stop("Cannot hoist ", input, ": ", FILE, " also exists at the project root.", call. = FALSE)
+        .fail("Cannot hoist ", input, ": ", FILE, " also exists at the project root.")
       }
       if (!file.rename(from = input, to = FILE)) {
-        stop("Cannot stage master at project root: ", input, call. = FALSE)
+        .fail("Cannot stage master at project root: ", input)
       }
       DATA <- readLines(FILE, warn = FALSE)
       IDX <- utils::head(grep("\\]\\(\\.\\./|[\"']\\.\\./|:[[:space:]]*\\.\\./|include[[:space:]]+\\.\\./|=\\.\\./", DATA), 3L)
       if (length(IDX)) {
-        message("[render] note: ", input, " mentions parent-relative paths; resources resolve from the project root:\n",
-                paste(paste0(IDX, ":", DATA[IDX]), collapse = "\n"))
+        .inform("moduleNote", input, " mentions parent-relative paths; resources resolve from the project root:\n",
+                paste(paste0(IDX, ":", DATA[IDX]), collapse = "\n"), operation = "render", path = input)
       }
       FILES <- list.files(DIR)
       FILES <- FILES[!grepl("\\.(qmd|md)$", FILES)]
       if (length(FILES)) {
-        message("[render] note: ", FILES[[1L]], " is beside ", input,
-                "; the master resolves resources from the project root.")
+        .inform("moduleNote", FILES[[1L]], " is beside ", input,
+                "; the master resolves resources from the project root.", operation = "render", path = input)
       }
       input <- FILE
     }
@@ -163,20 +163,21 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
   if (profile != "docx") {
     .copyRenderPath(from = file.path("yml", Profile), to = Profile)
   }
-  message("[render] ", profile, if (Book && profile == "docx") " book", " -> ", output, "/")
+  .inform("moduleProgress", "Rendering ", profile, if (Book && profile == "docx") " book", " -> ", output, "/",
+          operation = "render", path = output)
   .runRenderCommand("quarto", args = c(Command, args))
   FILES <- list.files("_ngr-output", all.files = TRUE, no.. = TRUE, full.names = TRUE)
   if (!any(file_test("-f", FILES) & !fs::is_link(FILES))) {
-    stop("Staged output has no file at its root; keeping existing ", output, "/", call. = FALSE)
+    .fail("Staged output has no file at its root; keeping existing ", output, "/")
   }
   if (profile == "docx") {
     FILES <- list.files("_ngr-output", pattern = "\\.docx$", recursive = TRUE, full.names = TRUE)
-    if (!length(FILES)) stop("DOCX output not found in staged output.", call. = FALSE)
+    if (!length(FILES)) .fail("DOCX output not found in staged output.")
     for (FILE in FILES) {
       Candidate <- paste0(FILE, ".composed")
       .runRenderCommand(Python, args = c(Composer, "compose", "--template", Template,
                         "--content", FILE, "--spec", SpecPath, "--output", Candidate))
-      if (!file.rename(Candidate, FILE)) stop("Cannot replace staged DOCX: ", FILE, call. = FALSE)
+      if (!file.rename(Candidate, FILE)) .fail("Cannot replace staged DOCX: ", FILE)
     }
   }
   Destination <- file.path(Root, output)
@@ -184,7 +185,7 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
     fs::file_delete(Destination)
   }
   if (!dir.exists(Destination) && !dir.create(Destination, recursive = TRUE)) {
-    stop("Cannot create output directory: ", Destination, call. = FALSE)
+    .fail("Cannot create output directory: ", Destination)
   }
   for (FILE in list.files("_ngr-output", all.files = TRUE, no.. = TRUE)) {
     if (profile == "docx" && grepl("[.]docx$", FILE)) {
@@ -203,7 +204,7 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
       (profile == "docx" && output != "docx") ||
       (profile != "docx" && (!grepl("^html/[^/\\\\]+$", output) ||
                              basename(output) %in% c(".", "..")))) {
-    stop("Invalid render output path for profile ", profile, ".", call. = FALSE)
+    .fail("Invalid render output path for profile ", profile, ".")
   }
   invisible(NULL)
 }
@@ -212,7 +213,7 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
 .copyRenderPath <- function(from, to) {
   if (isTRUE(fs::is_link(from))) {
     if (file.exists(to) || isTRUE(fs::is_link(to))) {
-      if (dir.exists(to)) stop("Cannot replace directory with link: ", to, call. = FALSE)
+      if (dir.exists(to)) .fail("Cannot replace directory with link: ", to)
       fs::file_delete(to)
     }
     if (.Platform$OS.type == "windows") {
@@ -223,36 +224,36 @@ quartoRender <- function(input, profile, root = getwd(), output = NULL,
       ), from, to))
     }
     if (.Platform$OS.type != "windows" && !file.symlink(from = fs::link_path(from), to = to)) {
-      stop("Cannot copy render link: ", from, call. = FALSE)
+      .fail("Cannot copy render link: ", from)
     }
     return(invisible(to))
   }
   if (dir.exists(from)) {
     if (file.access(from, 5L) != 0L) {
-      stop("Cannot read render directory: ", from, call. = FALSE)
+      .fail("Cannot read render directory: ", from)
     }
     Info <- file.info(from)
-    if (!dir.exists(to) && !dir.create(to)) stop("Cannot create directory: ", to, call. = FALSE)
+    if (!dir.exists(to) && !dir.create(to)) .fail("Cannot create directory: ", to)
     for (FILE in list.files(from, all.files = TRUE, no.. = TRUE)) {
       .copyRenderPath(from = file.path(from, FILE), to = file.path(to, FILE))
     }
     if (!Sys.chmod(to, mode = Info$mode, use_umask = FALSE) || !Sys.setFileTime(to, Info$mtime)) {
-      stop("Cannot preserve directory metadata: ", to, call. = FALSE)
+      .fail("Cannot preserve directory metadata: ", to)
     }
     return(invisible(to))
   }
   if (!file.copy(from = from, to = to, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)) {
-    stop("Cannot copy render resource: ", from, call. = FALSE)
+    .fail("Cannot copy render resource: ", from)
   }
   if (!Sys.chmod(to, mode = file.info(from)$mode, use_umask = FALSE)) {
-    stop("Cannot preserve file permissions: ", to, call. = FALSE)
+    .fail("Cannot preserve file permissions: ", to)
   }
   invisible(to)
 }
 
 .runRenderCommand <- function(command, args) {
-  if (!nzchar(Sys.which(command))) stop("Render requires ", command, " on PATH.", call. = FALSE)
+  if (!nzchar(Sys.which(command))) .fail("Render requires ", command, " on PATH.")
   Status <- system2(command, args = shQuote(args))
-  if (Status != 0L) stop(command, " failed with status ", Status, ".", call. = FALSE)
+  if (Status != 0L) .fail(command, " failed with status ", Status, ".")
   invisible(NULL)
 }

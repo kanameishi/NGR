@@ -20,7 +20,8 @@ showMarkdownRendered <- function(filePath, height = "500px", theme = "spacelab",
     file.info(filePath)$mtime > file.info(HTML_PATH)$mtime
   
   if (SHOULD_RENDER) {
-    message("[showMarkdownRendered] Rendering ", basename(filePath), " (HTML missing or outdated)")
+    .inform("moduleNote", "Rendering ", basename(filePath), " (HTML missing or outdated)",
+            operation = "showMarkdownRendered", path = filePath)
     
     CONTENT <- readLines(filePath, warn = FALSE)
     
@@ -80,7 +81,8 @@ showMarkdownRendered <- function(filePath, height = "500px", theme = "spacelab",
     TEMP_FILES_DIR <- sub("\\.md$", "_files", TEMP_FILE)
     if (dir.exists(TEMP_FILES_DIR)) unlink(TEMP_FILES_DIR, recursive = TRUE)
   } else {
-    message("[showMarkdownRendered] Using cached HTML for ", basename(filePath))
+    .inform("moduleNote", "Using cached HTML for ", basename(filePath),
+            operation = "showMarkdownRendered", path = filePath)
   }
   
   HTML_RELATIVE <- HTML_PATH

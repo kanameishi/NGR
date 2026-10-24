@@ -12,7 +12,7 @@ test_that("the print stamp names the date and ignores the provenance state", {
   Stamp <- paste0("Printed: ", format(Sys.Date(), "%d/%m/%Y"))
   expect_message(
     Out <- NGR::quartoRenderStamp(Manifest, root = Root),
-    "Render timestamp:"
+    "^Render timestamp:", class = "moduleNote"
   )
   expect_identical(Out, Stamp)
   expect_identical(unname(tools::md5sum(FILE)), Digest)

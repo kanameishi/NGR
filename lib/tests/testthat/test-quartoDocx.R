@@ -81,7 +81,7 @@ test_that("appendix identity uses Pandoc and flattens part entries", {
   Master <- list(appendices = list(list(part = "Apéndices", chapters = list("a.qmd", "b.qmd"))))
   expect_identical(Appendices(Master), list(list(bookmark = "sec-apx-a"), list(bookmark = "sec-apx-b")))
   expect_identical(Appendices(list()), list())
-  expect_message(Appendices(list(chapters = "index.qmd")), "no appendices declared", fixed = TRUE)
+  expect_message(Appendices(list(chapters = "index.qmd")), "no appendices declared", fixed = TRUE, class = "moduleNote")
   writeLines("# Tablas y notas {#sec-apx-a}", "b.qmd")
   expect_error(Appendices(Master), "unique")
   writeLines("# Tablas y notas {#sec-apx-b .unnumbered}", "b.qmd")

@@ -19,7 +19,7 @@ quartoRenderStamp <- function(manifest, root = getwd()) {
   for (Source in manifest$scaffolds) {
     for (FILE in names(Source$files)) {
       if (startsWith(FILE, "/") || ".." %in% strsplit(FILE, "/", fixed = TRUE)[[1L]]) {
-        stop("Scaffold path escapes the project: ", FILE, call. = FALSE)
+        .fail("Scaffold path escapes the project: ", FILE)
       }
       Entry <- Source$files[[FILE]]
       if (!is.character(Entry$commit) || length(Entry$commit) != 1L ||
@@ -27,18 +27,18 @@ quartoRenderStamp <- function(manifest, root = getwd()) {
           !is.logical(Entry$dirty) || length(Entry$dirty) != 1L ||
           !is.character(Entry$md5) || length(Entry$md5) != 1L ||
           !grepl("^[0-9a-f]{32}$", Entry$md5)) {
-        stop("Invalid scaffold provenance for ", FILE, call. = FALSE)
+        .fail("Invalid scaffold provenance for ", FILE)
       }
       Path <- file.path(Root, FILE)
       if (file.exists(Path)) {
         Path <- normalizePath(Path, winslash = "/")
         if (!startsWith(Path, paste0(Root, "/"))) {
-          stop("Scaffold path escapes the project: ", FILE, call. = FALSE)
+          .fail("Scaffold path escapes the project: ", FILE)
         }
       }
     }
   }
   Timestamp <- Sys.time()
-  message("Render timestamp: ", format(Timestamp, "%Y-%m-%d %H:%M:%S %Z"))
+  .inform("moduleNote", "Render timestamp: ", format(Timestamp, "%Y-%m-%d %H:%M:%S %Z"), operation = "render")
   paste0("Printed: ", format(Timestamp, "%d/%m/%Y"))
 }

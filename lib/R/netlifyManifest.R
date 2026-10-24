@@ -38,18 +38,19 @@ netlifyDeployManifest <- function(manifest, root = getwd(), only = character(),
   Root <- normalizePath(root, winslash = "/", mustWork = TRUE)
   Selected <- .selectArtifacts(.readArtifacts(manifest = manifest, root = Root),
                                only = only, except = except)
-  if (!nzchar(Sys.which("netlify"))) stop("Netlify CLI not found on PATH.", call. = FALSE)
+  if (!nzchar(Sys.which("netlify"))) .fail("Netlify CLI not found on PATH.")
   if (!dryRun && !file.exists(file.path(Root, ".netlify/sites.env"))) {
-    stop("Missing .netlify/sites.env; register aliases first.", call. = FALSE)
+    .fail("Missing .netlify/sites.env; register aliases first.")
   }
   Present <- vapply(Selected, function(x) {
     file_test("-f", file.path(Root, x$path, "index.html"))
   }, logical(1L))
   for (Entry in Selected[!Present]) {
     if (Entry$required) {
-      stop("Missing required static site: ", Entry$alias, ": ", Entry$path, "/index.html", call. = FALSE)
+      .fail("Missing required static site: ", Entry$alias, ": ", Entry$path, "/index.html")
     }
-    message("SKIP deploy ", Entry$alias, " optional missing path=", Entry$path)
+    .inform("moduleNote", "skip ", Entry$alias, " optional missing path=", Entry$path,
+            operation = "deploy", phase = "upload", unit = Entry$alias, path = Entry$path)
   }
   Selected <- Selected[Present]
   if (!length(Selected)) return(invisible(character()))
@@ -73,10 +74,10 @@ netlifyDomainManifest <- function(manifest, root = getwd(), only = character(),
   Artifacts <- .readArtifacts(manifest = manifest, root = root)
   Selected <- .selectArtifacts(Artifacts, only = only, except = except)
   if (anyDuplicated(unlist(lapply(Artifacts, `[[`, field), use.names = FALSE))) {
-    stop("Duplicate ", field, " across manifest.", call. = FALSE)
+    .fail("Duplicate ", field, " across manifest.")
   }
   if (any(vapply(Selected, function(x) is.null(x[[field]]), logical(1L)))) {
-    stop("Every selected artifact requires ", field, ".", call. = FALSE)
+    .fail("Every selected artifact requires ", field, ".")
   }
   stats::setNames(vapply(Selected, `[[`, character(1L), field),
                   vapply(Selected, `[[`, character(1L), "alias"))

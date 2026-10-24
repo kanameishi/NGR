@@ -20,7 +20,7 @@
 quartoRenderManifest <- function(manifest, root = getwd(), only = character(),
                                   except = character(), dryRun = FALSE) {
   if (!is.logical(dryRun) || length(dryRun) != 1L || is.na(dryRun)) {
-    stop("dryRun must be a boolean.", call. = FALSE)
+    .fail("dryRun must be a boolean.")
   }
   Root <- normalizePath(root, winslash = "/", mustWork = TRUE)
   Artifacts <- .readArtifacts(manifest = manifest, root = Root)
@@ -31,22 +31,23 @@ quartoRenderManifest <- function(manifest, root = getwd(), only = character(),
   }, character(1L))
   Claims <- chartr("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz", Claims)
   if (anyDuplicated(Claims)) {
-    stop("Output already claimed by another artifact: ", Claims[[anyDuplicated(Claims)]], call. = FALSE)
+    .fail("Output already claimed by another artifact: ", Claims[[anyDuplicated(Claims)]])
   }
   for (Entry in Selected) {
     if (Entry$kind != "quarto") next
     .checkRenderOutput(profile = Entry$profile, output = Entry$path)
     if (!file_test("-f", file.path(Root, Entry$renderSource))) {
-      stop("Missing render source for ", Entry$alias, ": ", Entry$renderSource, call. = FALSE)
+      .fail("Missing render source for ", Entry$alias, ": ", Entry$renderSource)
     }
   }
   for (Entry in Selected) {
     if (Entry$kind != "quarto") {
-      message("[render manifest] skip external ", Entry$alias, " path=", Entry$path)
+      .inform("moduleProgress", "skip external ", Entry$alias, " path=", Entry$path,
+              operation = "render", phase = "manifest", unit = Entry$alias, path = Entry$path)
       next
     }
-    message("[render manifest] ", Entry$alias, " source=", Entry$renderSource,
-            " profile=", Entry$profile, " path=", Entry$path)
+    .inform("moduleProgress", Entry$alias, " source=", Entry$renderSource, " profile=", Entry$profile,
+            " path=", Entry$path, operation = "render", phase = "manifest", unit = Entry$alias, path = Entry$path)
     if (!dryRun) quartoRender(input = Entry$renderSource, profile = Entry$profile,
                               root = Root, output = Entry$path, manifest = manifest)
   }
@@ -56,10 +57,11 @@ quartoRenderManifest <- function(manifest, root = getwd(), only = character(),
       Path <- .artifactOutput(Entry)
       if (file.exists(file.path(Root, Path))) next
       if (Entry$required) Missing <- c(Missing, paste0(Entry$alias, ": ", Path))
-      if (!Entry$required) message("[render manifest] optional missing output: ", Entry$alias, ": ", Path)
+      if (!Entry$required) .inform("moduleNote", "optional missing output: ", Entry$alias, ": ", Path,
+                                   operation = "render", phase = "manifest", unit = Entry$alias, path = Path)
     }
-    if (length(Missing)) stop("Missing required output: ", paste(Missing, collapse = "; "), call. = FALSE)
+    if (length(Missing)) .fail("Missing required output: ", paste(Missing, collapse = "; "))
   }
-  message("[render manifest] ", if (dryRun) "dry-run ok" else "complete")
+  .inform("moduleNote", "manifest ", if (dryRun) "dry-run ok" else "complete", operation = "render", phase = "manifest")
   invisible(Selected)
 }

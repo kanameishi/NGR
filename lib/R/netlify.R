@@ -19,7 +19,7 @@ netlifyRegister <- function(alias, site, root = getwd(), create = FALSE,
   .checkNetlifyArguments(alias, values = site, flags = list(create, dryRun))
   if (!is.null(account) && (!is.character(account) || length(account) != 1L ||
                             is.na(account) || !nzchar(account))) {
-    stop("Account must be one non-empty slug.", call. = FALSE)
+    .fail("Account must be one non-empty slug.")
   }
   Root <- normalizePath(root, winslash = "/", mustWork = TRUE)
   Directory <- getwd()
@@ -27,17 +27,20 @@ netlifyRegister <- function(alias, site, root = getwd(), create = FALSE,
   on.exit(setwd(Directory), add = TRUE)
   Registry <- file.path(Root, ".netlify/sites.env")
   if (dryRun) {
-    for (i in seq_along(alias)) message("INIT ", alias[[i]], " siteSlug=", site[[i]], " create=", create)
+    for (i in seq_along(alias)) {
+      .inform("moduleNote", alias[[i]], " siteSlug=", site[[i]], " create=", create,
+              operation = "deploy", phase = "init", unit = alias[[i]])
+    }
     return(invisible(stats::setNames(site, alias)))
   }
   Ids <- stats::setNames(rep("", length(alias)), alias)
   for (i in seq_along(alias)) {
     Ids[[i]] <- .findNetlifySite(site[[i]], account = account)
     Current <- .readNetlifyAlias(alias[[i]], registry = Registry)
-    if (!nzchar(Ids[[i]]) && !create) stop("Netlify site not found: ", site[[i]], "; use --create.", call. = FALSE)
+    if (!nzchar(Ids[[i]]) && !create) .fail("Netlify site not found: ", site[[i]], "; use --create.")
     if (nzchar(Ids[[i]])) .checkNetlifyId(Ids[[i]])
     if (nzchar(Current) && Current != Ids[[i]]) {
-      stop("Alias ", alias[[i]], " already points to ", Current, "; refusing retarget.", call. = FALSE)
+      .fail("Alias ", alias[[i]], " already points to ", Current, "; refusing retarget.")
     }
   }
   for (i in seq_along(alias)) {
@@ -50,12 +53,12 @@ netlifyRegister <- function(alias, site, root = getwd(), create = FALSE,
         .checkNetlifyId(Id)
         Id
       }, error = function(e) {
-        stop("Site creation completed but alias was not registered; reconcile with ngr deploy init ",
-             alias[[i]], " ", site[[i]], ". Cause: ", conditionMessage(e), call. = FALSE)
+        .fail("Site creation completed but alias was not registered; reconcile with ngr deploy init ",
+              alias[[i]], " ", site[[i]], ". Cause: ", conditionMessage(e))
       })
     }
     .writeNetlifyAlias(alias[[i]], id = Ids[[i]], registry = Registry)
-    message("[deploy init] ", alias[[i]], " -> ", Ids[[i]])
+    .inform("moduleNote", alias[[i]], " -> ", Ids[[i]], operation = "deploy", phase = "init", unit = alias[[i]])
   }
   invisible(Ids)
 }
@@ -76,16 +79,20 @@ netlifyDeploy <- function(alias, path, root = getwd(), prod = FALSE, dryRun = FA
   Directory <- getwd()
   setwd(Root)
   on.exit(setwd(Directory), add = TRUE)
-  if (!nzchar(Sys.which("netlify"))) stop("Netlify CLI not found on PATH.", call. = FALSE)
-  for (Path in path) if (!dir.exists(Path)) stop("Deploy directory not found: ", Path, call. = FALSE)
+  if (!nzchar(Sys.which("netlify"))) .fail("Netlify CLI not found on PATH.")
+  for (Path in path) if (!dir.exists(Path)) .fail("Deploy directory not found: ", Path)
   Ids <- .netlifyAliases(alias, registry = file.path(Root, ".netlify/sites.env"))
   if (!dryRun) for (Id in Ids) .netlifyApi("getSite", list(site_id = Id))
   for (i in seq_along(alias)) {
-    message("DEPLOY ", alias[[i]], " path=", path[[i]], " prod=", prod)
+    .inform("moduleProgress", alias[[i]], " path=", path[[i]], " prod=", prod,
+            operation = "deploy", phase = "upload", unit = alias[[i]], path = path[[i]])
     if (dryRun) next
     Args <- c("deploy", paste0("--dir=", path[[i]]), paste0("--site=", Ids[[i]]), "--no-build")
     if (prod) Args <- c(Args, "--prod")
-    cat(.netlifyCommand(Args), sep = "\n")
+    OUT <- .netlifyCommand(Args)
+    if (length(OUT)) {
+      .inform("moduleNote", paste(OUT, collapse = "\n"), operation = "deploy", phase = "upload", unit = alias[[i]])
+    }
   }
   invisible(Ids)
 }
@@ -104,7 +111,7 @@ netlifyDomain <- function(alias, domain, root = getwd(), https = FALSE,
                           rebind = FALSE, dryRun = FALSE) {
   .checkNetlifyArguments(alias, values = domain, flags = list(https, rebind, dryRun))
   if (any(!grepl("^[A-Za-z0-9.-]+$", domain) | !grepl(".", domain, fixed = TRUE))) {
-    stop("Invalid domain or URL.", call. = FALSE)
+    .fail("Invalid domain or URL.")
   }
   Root <- normalizePath(root, winslash = "/", mustWork = TRUE)
   Ids <- .netlifyAliases(alias, registry = file.path(Root, ".netlify/sites.env"))
@@ -115,7 +122,8 @@ netlifyDomain <- function(alias, domain, root = getwd(), https = FALSE,
     for (i in seq_along(alias)) .checkNetlifyDomain(id = Ids[[i]], domain = domain[[i]])
   }
   for (i in seq_along(alias)) {
-    message("DOMAIN ", alias[[i]], " domain=", domain[[i]], " https=", https, " rebind=", rebind)
+    .inform("moduleProgress", alias[[i]], " domain=", domain[[i]], " https=", https, " rebind=", rebind,
+            operation = "deploy", phase = "domain", unit = alias[[i]])
     if (dryRun) next
     if (rebind) .netlifyApi("updateSite", list(site_id = Ids[[i]], body = list(custom_domain = NULL)))
     .checkNetlifyDomain(id = Ids[[i]], domain = domain[[i]])
@@ -135,26 +143,26 @@ netlifyDomain <- function(alias, domain, root = getwd(), https = FALSE,
 #' @export
 netlifyUnbind <- function(alias, root = getwd()) {
   .checkNetlifyArguments(alias, values = alias, flags = list())
-  if (length(alias) != 1L) stop("Unbind requires one alias.", call. = FALSE)
+  if (length(alias) != 1L) .fail("Unbind requires one alias.")
   Registry <- file.path(normalizePath(root, winslash = "/", mustWork = TRUE), ".netlify/sites.env")
   Id <- .readNetlifyAlias(alias, registry = Registry)
-  if (!nzchar(Id)) stop("Alias not registered: ", alias, call. = FALSE)
+  if (!nzchar(Id)) .fail("Alias not registered: ", alias)
   .writeNetlifyAlias(alias, id = NULL, registry = Registry)
-  message("[deploy unbind] removed ", alias, " -> ", Id)
+  .inform("moduleNote", "removed ", alias, " -> ", Id, operation = "deploy", phase = "unbind", unit = alias)
   invisible(Id)
 }
 
 .checkNetlifyArguments <- function(alias, values, flags) {
   for (x in list(alias, values)) {
     if (!is.character(x) || !length(x) || anyNA(x) || any(!nzchar(x))) {
-      stop("Aliases and their values must be non-empty character vectors.", call. = FALSE)
+      .fail("Aliases and their values must be non-empty character vectors.")
     }
   }
   if (length(alias) != length(values) || anyDuplicated(alias)) {
-    stop("Each unique alias must have one corresponding value.", call. = FALSE)
+    .fail("Each unique alias must have one corresponding value.")
   }
   for (x in flags) {
-    if (!is.logical(x) || length(x) != 1L || is.na(x)) stop("Netlify flags must be boolean.", call. = FALSE)
+    if (!is.logical(x) || length(x) != 1L || is.na(x)) .fail("Netlify flags must be boolean.")
   }
 }
 
@@ -162,7 +170,7 @@ netlifyUnbind <- function(alias, root = getwd()) {
 
 .netlifyCommand <- function(args) {
   Command <- Sys.which("netlify")
-  if (!nzchar(Command)) stop("Netlify CLI not found on PATH.", call. = FALSE)
+  if (!nzchar(Command)) .fail("Netlify CLI not found on PATH.")
   Output <- tempfile("ngr-netlify-")
   Error <- tempfile("ngr-netlify-")
   on.exit(unlink(c(Output, Error)), add = TRUE)
@@ -171,7 +179,7 @@ netlifyUnbind <- function(alias, root = getwd()) {
   if (Status != 0L) {
     stop(errorCondition(paste0("Netlify ", args[[1L]], " failed (", Status, "): ",
                                paste(c(OUT, readLines(Error, warn = FALSE)), collapse = "\n")),
-                         class = "ngrNetlifyFailure"))
+                         class = c("ngrNetlifyFailure", "moduleFailure")))
   }
   OUT
 }
@@ -204,30 +212,30 @@ netlifyUnbind <- function(alias, root = getwd()) {
 
 .writeNetlifyAlias <- function(alias, id, registry) {
   Current <- .readNetlifyAlias(alias, registry = registry)
-  if (!is.null(id) && nzchar(Current) && Current != id) stop("Refusing alias retarget: ", alias, call. = FALSE)
+  if (!is.null(id) && nzchar(Current) && Current != id) .fail("Refusing alias retarget: ", alias)
   Lines <- character()
   if (file.exists(registry)) Lines <- readLines(registry, warn = FALSE)
   Lines <- Lines[sub("=.*$", "", Lines) != alias]
   if (!is.null(id)) Lines <- c(Lines, paste0(alias, "=", id))
   if (!dir.exists(dirname(registry)) && !dir.create(dirname(registry), recursive = TRUE)) {
-    stop("Cannot create registry directory.", call. = FALSE)
+    .fail("Cannot create registry directory.")
   }
   Path <- tempfile(".ngr-registry-", tmpdir = dirname(registry))
   on.exit(unlink(Path), add = TRUE)
   writeLines(Lines, Path, useBytes = TRUE)
-  if (!file.rename(Path, registry)) stop("Cannot replace registry: ", registry, call. = FALSE)
+  if (!file.rename(Path, registry)) .fail("Cannot replace registry: ", registry)
 }
 
 .checkNetlifyId <- function(id) {
   if (!is.character(id) || length(id) != 1L || is.na(id) ||
       !grepl("^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$", id)) {
-    stop("Invalid Netlify UUID: ", id, call. = FALSE)
+    .fail("Invalid Netlify UUID: ", id)
   }
 }
 
 .netlifyAliases <- function(alias, registry) {
   Ids <- vapply(alias, .readNetlifyAlias, character(1L), registry = registry)
-  if (any(!nzchar(Ids))) stop("Alias not registered: ", paste(alias[!nzchar(Ids)], collapse = ", "), call. = FALSE)
+  if (any(!nzchar(Ids))) .fail("Alias not registered: ", paste(alias[!nzchar(Ids)], collapse = ", "))
   for (Id in Ids) .checkNetlifyId(Id)
   Ids
 }
@@ -235,7 +243,7 @@ netlifyUnbind <- function(alias, root = getwd()) {
 .checkNetlifyDomain <- function(id, domain) {
   Current <- .netlifyApi("getSite", list(site_id = id))$custom_domain
   if (!is.null(Current) && nzchar(Current) && Current != domain) {
-    stop("Site already has custom domain ", Current, "; refusing replace with ", domain, call. = FALSE)
+    .fail("Site already has custom domain ", Current, "; refusing replace with ", domain)
   }
 }
 
@@ -254,29 +262,34 @@ netlifyUnbind <- function(alias, root = getwd()) {
 
 .checkNetlifyDns <- function(id, domain) {
   if (!nzchar(Sys.which("dig"))) {
-    message("[deploy domain] dig not found; verify DNS for ", domain, ".")
+    .inform("moduleNote", "dig not found; verify DNS for ", domain, ".",
+            operation = "deploy", phase = "domain", unit = domain)
     return(invisible(NULL))
   }
   Data <- tryCatch(.netlifyApi("getSite", list(site_id = id)), ngrNetlifyFailure = function(e) NULL)
   if (is.null(Data$dns_zone_id) || !nzchar(Data$dns_zone_id)) {
-    message("[deploy domain] zone is not Netlify-managed; verify DNS for ", domain, ".")
+    .inform("moduleNote", "zone is not Netlify-managed; verify DNS for ", domain, ".",
+            operation = "deploy", phase = "domain", unit = domain)
     return(invisible(NULL))
   }
   Data <- tryCatch(.netlifyApi("getDnsZone", list(zone_id = Data$dns_zone_id)), ngrNetlifyFailure = function(e) NULL)
   if (!length(Data$dns_servers) || !nzchar(Data$dns_servers[[1L]])) {
-    message("[deploy domain] cannot read zone nameservers; verify DNS for ", domain, ".")
+    .inform("moduleNote", "cannot read zone nameservers; verify DNS for ", domain, ".",
+            operation = "deploy", phase = "domain", unit = domain)
     return(invisible(NULL))
   }
   for (i in seq_len(6L)) {
     OUT <- suppressWarnings(system2("dig", shQuote(c("+short", domain, "A", paste0("@", Data$dns_servers[[1L]]))),
                                     stdout = TRUE, stderr = FALSE))
     if (length(OUT) && nzchar(OUT[[1L]]) && is.null(attr(OUT, "status"))) {
-      message("[deploy domain] ", domain, " is served by ", Data$dns_servers[[1L]])
+      .inform("moduleNote", domain, " is served by ", Data$dns_servers[[1L]],
+              operation = "deploy", phase = "domain", unit = domain)
       return(invisible(NULL))
     }
     Sys.sleep(10)
   }
-  message("[deploy domain] authoritative DNS does not serve ", domain,
-          " yet; verify DNS and the site edge before announcing it.")
+  .inform("moduleNote", "authoritative DNS does not serve ", domain,
+          " yet; verify DNS and the site edge before announcing it.",
+          operation = "deploy", phase = "domain", unit = domain)
   invisible(NULL)
 }
