@@ -1,9 +1,10 @@
 #!/usr/bin/env Rscript
-# ngr: command-line interface of the installed NGR package. This file interprets
-# arguments, prints results and sets the exit status; every operation is an
-# exported NGR function.
+# ngr: command-line interface of the installed NGR package. This file reads its
+# arguments from CLI_ARGS, writes results to stdout and returns the exit status of
+# a completed command; every operation is an exported NGR function. Errors and
+# the library's conditions go to the renderer of install/cli/console.R.
 
-.failUsage <- function(...) stop(errorCondition(paste0(...), class = "ngrUsageError"))
+.failUsage <- function(...) stop(errorCondition(paste0(...), class = c("ngrUsageError", "moduleUsage")))
 
 .splitAliases <- function(value) Filter(nzchar, strsplit(value, ",", fixed = TRUE)[[1L]])
 
@@ -19,37 +20,41 @@
   # this payload and the recorded build. The path of the library is not
   # printed (owner rulings of 2026-10-04 and 2026-10-12).
   .loadLibrary()
-  cat("NGR ", as.character(utils::packageVersion("NGR")), "\n", sep = "")
+  writeLines(paste("NGR", utils::packageVersion("NGR")))
   File <- sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE)[[1L]])
   File <- gsub("~+~", " ", File, fixed = TRUE)
   # Lexical cleanup only (never resolve symlinks): the verifier compares the
   # as-installed spelling, and tempfile() paths can carry a double slash.
   File <- gsub("/{2,}", "/", File)
-  cat("cli: ", File, "\n", sep = "")
+  writeLines(paste0("cli: ", File))
   Build <- "unknown"
   Info <- file.path(runtime, "BUILD_INFO")
   if (file.exists(Info)) {
     Line <- grep("^git_describe=", readLines(Info, warn = FALSE), value = TRUE)
     if (length(Line)) Build <- sub("^git_describe=", "", Line[[1L]])
   }
-  cat("build: ", Build, "\n", sep = "")
+  writeLines(paste0("build: ", Build))
   0L
 }
 
 .showHelp <- function() {
-  cat("ngr \u2014 resources, reports and publication\n\n",
-      "Run from the project directory, or select it with --root DIR.\n",
-      "DIR must exist; relative paths use the selected project.\n\n",
-      "Commands:\n",
-      "  pull   --from <manifest.json> [paths...]      Bring resources from a source into the project\n",
-      "  pull   [--force] [--dry-run] [paths...]       Update the project from its recorded sources\n",
-      "  status [--check] [paths...]                   Compare the project with its sources\n",
-      "  doctor                                        Check the project against its declared checks\n",
-      "  render <input.qmd> --profile <profile>        Render through yml/_quarto*.yml (book|html|revealjs|docx)\n",
-      "  render --manifest <file> [--dry-run]          Render or plan the manifest artifacts\n",
-      "  deploy                                        Publish artifacts and register Netlify sites\n\n",
-      "  --version                                     Show the installed command, package and build\n\n",
-      "Run 'ngr <command> --help' for command-specific help.\n", sep = "")
+  writeLines(c("ngr - resources, reports and publication", "",
+               "Run from the project directory, or select it with --root DIR.",
+               "DIR must exist; relative paths use the selected project.", "",
+               "Commands:",
+               "  pull   --from <manifest.json> [paths...]      Bring resources from a source into the project",
+               "  pull   [--force] [--dry-run] [paths...]       Update the project from its recorded sources",
+               "  status [--check] [paths...]                   Compare the project with its sources",
+               "  doctor                                        Check the project against its declared checks",
+               "  render <input.qmd> --profile <profile>        Render through yml/_quarto*.yml (book|html|revealjs|docx)",
+               "  render --manifest <file> [--dry-run]          Render or plan the manifest artifacts",
+               "  deploy                                        Publish artifacts and register Netlify sites", "",
+               "  --version                                     Show the installed command, package and build", "",
+               "Results go to stdout; notes, progress, warnings and errors go to stderr.",
+               "--verbose adds the condition fields to the stderr lines; --quiet hides notes and progress.",
+               "Given together, --quiet prevails. Both count only before --.",
+               "Exit: 0 success; 1 failure, or drift found by status --check; 2 invalid usage; 130 interrupted.", "",
+               "Run 'ngr <command> --help' for command-specific help."))
   0L
 }
 
@@ -100,13 +105,12 @@
     Values$paths <- c(Values$paths, Arg)
   }
   if (Help) {
-    cat("usage: ngr ", Command, " [--source ID] ", sep = "")
-    if (Command %in% c("pull", "status")) cat("[--from MANIFEST] ")
-    if (Command == "pull") cat("[--force] [--dry-run] ")
-    if (Command == "status") cat("[--check] ")
-    cat("[--root DIR] [--help]")
-    if (Command %in% c("pull", "status")) cat(" [TARGETS ...]")
-    cat("\n")
+    writeLines(paste0("usage: ngr ", Command, " [--source ID] ",
+                      if (Command %in% c("pull", "status")) "[--from MANIFEST] ",
+                      if (Command == "pull") "[--force] [--dry-run] ",
+                      if (Command == "status") "[--check] ",
+                      "[--root DIR] [--help]",
+                      if (Command %in% c("pull", "status")) " [TARGETS ...]"))
     return(0L)
   }
   .loadLibrary()
@@ -114,28 +118,19 @@
   if (Command == "pull") {
     Result <- NGR::pullResources(from = Values$from, source = Values$source, paths = Values$paths,
                                  force = Force, dryRun = DryRun)
-    for (i in seq_len(nrow(Result$actions))) {
-      cat(Result$actions$source[[i]], Result$actions$action[[i]], Result$actions$path[[i]], sep = "\t")
-      cat("\n")
-    }
-    cat("[pull] ", if (DryRun) "plan" else "complete", ": ", nrow(Result$actions), " resource contributions\n", sep = "")
+    writeLines(paste(Result$actions$source, Result$actions$action, Result$actions$path, sep = "\t"))
+    writeLines(paste0("[pull] ", if (DryRun) "plan" else "complete", ": ", nrow(Result$actions), " resource contributions"))
     return(0L)
   }
   if (Command == "status") {
     Result <- NGR::compareResources(from = Values$from, source = Values$source, paths = Values$paths)
-    for (i in seq_len(nrow(Result$files))) {
-      cat(Result$files$source[[i]], Result$files$state[[i]], Result$files$path[[i]], sep = "\t")
-      if (Result$files$modified[[i]]) cat("\tlocally-modified")
-      cat("\n")
-    }
+    writeLines(paste0(paste(Result$files$source, Result$files$state, Result$files$path, sep = "\t"),
+                      ifelse(Result$files$modified, "\tlocally-modified", "")))
     return(as.integer(Check && Result$changed))
   }
-  message("NGR ", utils::packageVersion("NGR"))
-  withCallingHandlers(NGR::checkResources(source = Values$source), message = function(e) {
-    cat(conditionMessage(e))
-    invokeRestart("muffleMessage")
-  })
-  cat("[doctor] declared checks passed\n")
+  message(messageCondition(paste0("NGR ", utils::packageVersion("NGR"), "\n"), class = "moduleNote", operation = "doctor"))
+  NGR::checkResources(source = Values$source)
+  writeLines("[doctor] declared checks passed")
   0L
 }
 
@@ -149,20 +144,20 @@
     Arg <- args[[i]]
     i <- i + 1L
     if (Arg %in% c("-h", "--help")) {
-      cat("Usage: ngr render <input.qmd> --profile <book|revealjs|docx|html> [Quarto args...]\n",
-          "       ngr render --manifest <file> [--dry-run] [--only <aliases>] [--except <aliases>]\n\n",
-          "--root DIR selects an existing project directory; default is the working directory.\n",
-          "Uses yml/_quarto.yml and yml/_quarto-<profile>.yml from the project.\n",
-          "Book masters supply chapters and appendices through frontmatter.\n",
-          "DOCX uses master title/lang and params.client.name, params.consultant.name,\n",
-          "  params.project_id from params.yml; the render date is automatic (dd/mm/yyyy).\n",
-          "  No srk block or manual date is required.\n",
-          "Output: html/<stem>/, the manifest's HTML path, or docx/.\n",
-          "Run ngr pull --from ngr first if yml/ does not exist.\n", sep = "")
+      writeLines(c("Usage: ngr render <input.qmd> --profile <book|revealjs|docx|html> [Quarto args...]",
+                   "       ngr render --manifest <file> [--dry-run] [--only <aliases>] [--except <aliases>]", "",
+                   "--root DIR selects an existing project directory; default is the working directory.",
+                   "Uses yml/_quarto.yml and yml/_quarto-<profile>.yml from the project.",
+                   "Book masters supply chapters and appendices through frontmatter.",
+                   "DOCX uses master title/lang and params.client.name, params.consultant.name,",
+                   "  params.project_id from params.yml; the render date is automatic (dd/mm/yyyy).",
+                   "  No srk block or manual date is required.",
+                   "Output: html/<stem>/, the manifest's HTML path, or docx/.",
+                   "Run ngr pull --from ngr first if yml/ does not exist."))
       return(0L)
     }
     if (Arg %in% paste0("--", names(Values))) {
-      if (i > length(args)) stop(Arg, " requires a value.", call. = FALSE)
+      if (i > length(args)) .failUsage(Arg, " requires a value.")
       Values[[substring(Arg, 3L)]] <- args[[i]]
       i <- i + 1L
       next
@@ -172,22 +167,22 @@
       next
     }
     if (grepl("\\.(qmd|md)$", Arg)) {
-      if (!is.null(Input)) stop("Multiple render inputs.", call. = FALSE)
+      if (!is.null(Input)) .failUsage("Multiple render inputs.")
       Input <- Arg
       next
     }
     Extra <- c(Extra, Arg)
   }
   if (!is.null(Values$manifest)) {
-    if (!is.null(Input) || !is.null(Values$profile)) stop("--manifest cannot be combined with input/--profile.", call. = FALSE)
-    if (length(Extra)) stop("Unsupported arguments with --manifest: ", paste(Extra, collapse = " "), call. = FALSE)
+    if (!is.null(Input) || !is.null(Values$profile)) .failUsage("--manifest cannot be combined with input/--profile.")
+    if (length(Extra)) .failUsage("Unsupported arguments with --manifest: ", paste(Extra, collapse = " "))
     .loadLibrary()
     NGR::quartoRenderManifest(Values$manifest, only = .splitAliases(Values$only),
                               except = .splitAliases(Values$except), dryRun = DryRun)
     return(0L)
   }
   if (DryRun || nzchar(Values$only) || nzchar(Values$except)) {
-    stop("--dry-run/--only/--except require --manifest.", call. = FALSE)
+    .failUsage("--dry-run/--only/--except require --manifest.")
   }
   .loadLibrary()
   NGR::quartoRender(input = Input, profile = Values$profile, args = Extra)
@@ -201,16 +196,16 @@
     args <- args[-1L]
   }
   if (!length(args) || args[[1L]] %in% c("-h", "--help")) {
-    cat("Usage:\n",
-        "  ngr deploy <alias> <dir> [--prod]\n",
-        "  ngr deploy --manifest <file> [--dry-run] [--prod] [--only <aliases>] [--except <aliases>]\n",
-        "  ngr deploy init <alias> <site-name> [--create] [--account <slug>]\n",
-        "  ngr deploy init --manifest <file> [--dry-run] [--create] [--account <slug>] [--only <aliases>] [--except <aliases>]\n",
-        "  ngr deploy domain <alias> <domain> [--https] [--rebind] [--dry-run]\n",
-        "  ngr deploy domain --manifest <file> [--https] [--dry-run] [--only <aliases>] [--except <aliases>]\n",
-        "  ngr deploy unbind <alias>\n\n",
-        "--root DIR selects the project and its .netlify/sites.env registry.\n", sep = "")
-    return(if (length(args)) 0L else 1L)
+    writeLines(c("Usage:",
+                 "  ngr deploy <alias> <dir> [--prod]",
+                 "  ngr deploy --manifest <file> [--dry-run] [--prod] [--only <aliases>] [--except <aliases>]",
+                 "  ngr deploy init <alias> <site-name> [--create] [--account <slug>]",
+                 "  ngr deploy init --manifest <file> [--dry-run] [--create] [--account <slug>] [--only <aliases>] [--except <aliases>]",
+                 "  ngr deploy domain <alias> <domain> [--https] [--rebind] [--dry-run]",
+                 "  ngr deploy domain --manifest <file> [--https] [--dry-run] [--only <aliases>] [--except <aliases>]",
+                 "  ngr deploy unbind <alias>", "",
+                 "--root DIR selects the project and its .netlify/sites.env registry."))
+    return(0L)
   }
   Values <- list(manifest = NULL, only = "", except = "", account = NULL)
   Flags <- list(prod = FALSE, create = FALSE, https = FALSE, rebind = FALSE, dryRun = FALSE)
@@ -221,7 +216,7 @@
     Arg <- args[[i]]
     i <- i + 1L
     if (Arg %in% paste0("--", names(Values))) {
-      if (i > length(args)) stop(Arg, " requires a value.", call. = FALSE)
+      if (i > length(args)) .failUsage(Arg, " requires a value.")
       Values[[substring(Arg, 3L)]] <- args[[i]]
       i <- i + 1L
       Supplied <- c(Supplied, Arg)
@@ -234,7 +229,7 @@
       Supplied <- c(Supplied, Arg)
       next
     }
-    if (startsWith(Arg, "-")) stop("Unknown deploy argument: ", Arg, call. = FALSE)
+    if (startsWith(Arg, "-")) .failUsage("Unknown deploy argument: ", Arg)
     Positional <- c(Positional, Arg)
   }
   Allowed <- switch(Action, upload = "--prod", init = c("--create", "--account"),
@@ -242,11 +237,11 @@
   if (!is.null(Values$manifest) && Action != "unbind") {
     Allowed <- c(setdiff(Allowed, "--rebind"), "--manifest", "--dry-run", "--only", "--except")
   }
-  if (any(!Supplied %in% Allowed)) stop("Unsupported deploy argument: ", paste(setdiff(Supplied, Allowed), collapse = " "), call. = FALSE)
+  if (any(!Supplied %in% Allowed)) .failUsage("Unsupported deploy argument: ", paste(setdiff(Supplied, Allowed), collapse = " "))
   if (is.null(Values$manifest)) {
     Expected <- 2L
     if (Action == "unbind") Expected <- 1L
-    if (length(Positional) != Expected) stop("Missing or extra deploy arguments; see ngr deploy --help.", call. = FALSE)
+    if (length(Positional) != Expected) .failUsage("Missing or extra deploy arguments; see ngr deploy --help.")
     .loadLibrary()
     if (Action == "unbind") NGR::netlifyUnbind(Positional[[1L]])
     if (Action == "init") NGR::netlifyRegister(Positional[[1L]], site = Positional[[2L]], create = Flags$create, account = Values$account)
@@ -254,7 +249,7 @@
     if (Action == "domain") NGR::netlifyDomain(Positional[[1L]], domain = Positional[[2L]], https = Flags$https, rebind = Flags$rebind, dryRun = Flags$dryRun)
     return(0L)
   }
-  if (length(Positional)) stop("--manifest cannot be combined with positional arguments.", call. = FALSE)
+  if (length(Positional)) .failUsage("--manifest cannot be combined with positional arguments.")
   .loadLibrary()
   Only <- .splitAliases(Values$only)
   Except <- .splitAliases(Values$except)
@@ -308,18 +303,15 @@
   .failUsage("Unknown command: ", Command, "; use ngr --help")
 }
 
-Status <- tryCatch({
-  Path <- Sys.getenv("NGR_COMMAND_PATH", unset = NA_character_)
-  if (!is.na(Path)) Sys.setenv(PATH = Path)
-  Sys.unsetenv("NGR_COMMAND_PATH")
+Path <- Sys.getenv("NGR_COMMAND_PATH", unset = NA_character_)
+if (!is.na(Path)) Sys.setenv(PATH = Path)
+Sys.unsetenv("NGR_COMMAND_PATH")
+# entry.R passes the installed payload root; run from a checkout, the root is
+# this file's directory.
+Runtime <- if (exists("CLI_RESOURCES")) CLI_RESOURCES else {
   File <- sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE)[[1L]])
   # R encodes spaces as ~+~ in --file= on Unix; decode before resolving.
-  File <- gsub("~+~", " ", File, fixed = TRUE)
-  .runCommand(commandArgs(trailingOnly = TRUE),
-              runtime = dirname(normalizePath(File, winslash = "/", mustWork = TRUE)))
-}, error = function(e) {
-  message("ngr: ", conditionMessage(e))
-  if (inherits(e, "ngrUsageError")) return(2L)
-  1L
-})
-quit(save = "no", status = Status)
+  dirname(normalizePath(gsub("~+~", " ", File, fixed = TRUE), winslash = "/", mustWork = TRUE))
+}
+quit(save = "no", status = .runCommand(if (exists("CLI_ARGS")) CLI_ARGS else commandArgs(trailingOnly = TRUE),
+                                       runtime = Runtime))

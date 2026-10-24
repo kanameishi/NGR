@@ -88,7 +88,10 @@ class ResourceApiTest(unittest.TestCase):
                     for Binary, Project in zip((NGR_RESOURCE_REFERENCE, NGR_TEST_BIN), Projects)]
                 for Result in Results:
                     self.assertEqual(Result.returncode, int(Failure), Result.stdout + Result.stderr)
-                self.assertEqual(Results[0].stdout, Results[1].stdout)
+                # Each declared check is now a progress line on stderr; stdout keeps the report.
+                self.assertEqual([x for x in Results[0].stdout.splitlines() if not x.startswith("[doctor] source: ")],
+                                 Results[1].stdout.splitlines())
+                self.assertIn("source: ", Results[1].stderr)
                 for Project in Projects:
                     self.assertEqual(resourceSnapshot(Project), Before)
 

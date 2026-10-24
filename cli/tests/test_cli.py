@@ -73,6 +73,28 @@ class CliTest(unittest.TestCase):
                     self.assertEqual(DATA.stderr, "")
         self.assertEqual(list(self.Root.iterdir()), [])
 
+    def testDiagnosticsFollowTheFamilyRenderer(self):
+        for Args, Status, Line in ((("unknown",), 2, "ngr: Unknown command: unknown; use ngr --help"),
+                                   (("render", "--manifest"), 2, "ngr: --manifest requires a value."),
+                                   (("pull", "--source", "missing"), 1, "ngr: Unknown registered source: missing")):
+            with self.subTest(args=Args):
+                DATA = self.runCli(*Args)
+                self.assertEqual(DATA.returncode, Status, DATA.stdout + DATA.stderr)
+                self.assertEqual(DATA.stdout, "")
+                self.assertEqual(DATA.stderr, Line + "\n")
+        DATA = self.runCli("deploy")
+        self.assertEqual((DATA.returncode, DATA.stderr), (0, ""))
+        self.assertIn("ngr deploy unbind <alias>", DATA.stdout)
+        Version = self.runCli("--version").stdout.splitlines()[0]
+        for Flags, Note in (((), Version), (("--quiet",), None), (("--verbose",), Version + " [operation=doctor]"),
+                            (("--verbose", "--quiet"), None)):
+            with self.subTest(flags=Flags):
+                DATA = self.runCli(*Flags, "doctor")
+                self.assertEqual(DATA.returncode, 0, DATA.stdout + DATA.stderr)
+                self.assertEqual(DATA.stdout, "[doctor] declared checks passed\n")
+                self.assertEqual(DATA.stderr, "" if Note is None else Note + "\n")
+        self.assertEqual(list(self.Root.iterdir()), [])
+
     def testHelpNeedsNoLibraryAndAnOlderLibraryIsNamed(self):
         with tempfile.TemporaryDirectory(dir=NGR_TEST_ROOT) as DIR:
             Library = Path(DIR) / "library"
@@ -89,7 +111,8 @@ class CliTest(unittest.TestCase):
             self.assertRegex(self.runCli("--version", env=Environment).stdout, r"NGR is not installed|NGR \d")
             DATA = self.runCli("status", env=Environment)
             self.assertEqual(DATA.returncode, 1, DATA.stdout + DATA.stderr)
-            self.assertRegex(DATA.stderr, r"is not installed|is required; found")
+            # The renderer names the package version it found after an error outside the family.
+            self.assertRegex(DATA.stderr, r"is not installed|Package found: NGR \d")
             Package = Path(DIR) / "NGR"
             Package.mkdir()
             (Package / "DESCRIPTION").write_text("Package: NGR\nVersion: 0.0.1\nTitle: Older Library\n"
@@ -99,7 +122,7 @@ class CliTest(unittest.TestCase):
                             Package.as_posix(), Library.as_posix()], check=True, capture_output=True, env=Environment)
             DATA = self.runCli("status", env=Environment)
             self.assertEqual(DATA.returncode, 1, DATA.stdout + DATA.stderr)
-            self.assertIn("is required; found 0.0.1", DATA.stderr)
+            self.assertIn("Package found: NGR 0.0.1", DATA.stderr)
             # The failure names the version found, never the path of the library.
             self.assertNotIn(str(Library), DATA.stderr)
             self.assertEqual(self.runCli("--help", env=Environment).returncode, 0)
