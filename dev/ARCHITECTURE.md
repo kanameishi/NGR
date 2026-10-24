@@ -1,6 +1,6 @@
 # Repository architecture
 
-The family policy of the AOM model governs installation and package tooling; the [installation policy](../install/README.md) applies it to NGR.
+Under the family policy of the AOM model (AOM `dev/ARCHITECTURE.md`, owner rulings of 2026-10-15 and 2026-10-24), `install/` holds the product installer and `lib/inst/` holds the library's installation and maintenance scripts.
 
 | Folder | Ownership |
 | --- | --- |
