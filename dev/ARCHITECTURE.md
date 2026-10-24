@@ -86,6 +86,16 @@ library's autonomous installation and maintenance scripts; the module installer
 delegates library installation to `lib/inst/install.R`. Installing software
 does not publish Pages/CRAN, mutate Git or migrate project data.
 
+The installer writes the installed scaffold's `BUILD_INFO` (`buildInfo` in
+`install/requirements.R`) from the Git commit of the checkout; without a known
+commit the file is absent, and NGR treats the revision of the installed
+resources as `unknown` and dirty. On Windows, the installer checks the managed
+paths for reparse points through `install/cli/checkPaths.ps1`, which reads them
+from a temporary UTF-8 file because NGR's resource paths exceed the Windows
+argument limits. The product acceptance `install/acceptance.R` pulls only
+`bib/apa.csl` into the temporary project of the installed-product test and
+checks its status and its bytes against the installed scaffold.
+
 ## Documentation and Pages
 
 Repositories are private by policy. GitHub Pages is the public documentation

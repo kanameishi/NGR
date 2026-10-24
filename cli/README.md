@@ -2,8 +2,9 @@
 
 The CLI lives in `cli/`; the R package remains independently buildable in
 `lib/`. Follow the [public installation guide](https://kanameishi.github.io/NGR/articles/cli.html#install)
-from the repository root. Installation and package tooling live in `install/`,
-with macOS and Windows entries `install/install.sh` and `install/install.ps1`.
+from the repository root. The product installer lives in `install/`, with
+macOS and Windows entries `install/install.sh` and `install/install.ps1`; the
+library's installation and maintenance scripts live in `lib/inst/`.
 The CLI component checks the installed NGR package and never installs, updates
 or removes R packages. The common entry coordinates the selected components.
 Modified or foreign runtime files block replacement or removal.

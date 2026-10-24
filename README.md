@@ -11,7 +11,8 @@ missing scientific results; it never starts a map producer or OpenQuake.
 | R package | [`lib/`](lib/) |
 | Command-line interface `ngr` | [`cli/`](cli/) |
 | Consumer skill | [`skills/ngr/`](skills/ngr/) |
-| Product installer and package tooling | [`install/`](install/) |
+| Product installer | [`install/`](install/) |
+| Library installation and maintenance scripts | [`lib/inst/`](lib/inst/) |
 | Application (reserved) | [`app/`](app/) |
 | MCP (reserved) | [`mcp/`](mcp/) |
 | Live continuity state, maintainer rules and open defects | `dev/` |
