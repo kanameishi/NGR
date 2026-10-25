@@ -11,6 +11,12 @@
 * `ngr check` runs the checks that the project's sources declare, which
   `ngr doctor` ran before; its closing line on stdout is
   `[check] declared checks passed`.
+* `ngr deploy` writes the output the Netlify CLI returns for each upload on
+  stdout, as a result that `--quiet` does not hide; `netlifyDeploy()` returns
+  it in the attribute `response` of its UUIDs. A failure after a completed
+  upload signals `ngrPartialPublication`, which inherits from
+  `modulePartialPublication` and `moduleFailure` and holds the completed
+  uploads in `effects`; the command writes their output on stdout and exits 1.
 * `ngr --version` prints two lines: the package and its version, then `build:`
   with the commit of the installed sources that the installer recorded,
   `-dirty` when they were not committed, or `unknown`.

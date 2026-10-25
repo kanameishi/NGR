@@ -19,9 +19,19 @@ netlifyDeploy(alias, path, root = getwd(), prod = FALSE, dryRun = FALSE)
 \item{dryRun}{Describe the request without provider calls or registry writes.}
 }
 \value{
-Invisibly, the provider UUIDs named by alias.
+Invisibly, the provider UUIDs named by alias. After uploads, its
+attribute \code{response} holds, by alias, the lines the Netlify CLI returned
+for each upload; a dry run has no such attribute.
 }
 \description{
 Validates all directories and registered sites before uploading. Never builds
 a site; passes \code{--no-build} to Netlify. Draft deployments are the default.
+}
+\details{
+Uploads are sequential, not a transaction. A failure after a
+completed upload signals a condition of class \code{ngrPartialPublication},
+which inherits from \code{modulePartialPublication} and \code{moduleFailure}: its
+\code{effects} holds the UUIDs of the completed uploads with their \code{response},
+and its \code{cause} the failure. A failure before the first completed upload
+reaches the caller unchanged.
 }

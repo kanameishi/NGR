@@ -42,9 +42,11 @@ do not invent UUIDs. This plan makes no provider calls and does not prove
 authentication or that a recorded site still exists.
 
 Real deploy validates sites, then uploads sequentially. Preserve the site UUID,
-deploy identity, mode, response and returned URL for each attempt. Check the
-served artifact when claiming publication. On later failure, earlier uploads
-remain live. Reconcile a timeout/unknown response with the exact provider
+deploy identity, mode, response and returned URL for each attempt. The command
+writes the response of each completed upload on stdout, also with `--quiet`.
+Check the served artifact when claiming publication. On later failure, earlier
+uploads remain live: stdout keeps their responses, and the error names the
+uploaded and the remaining aliases and exits 1. Reconcile a timeout/unknown response with the exact provider
 deploy before retrying, and resume only unfinished aliases.
 
 ## Register or create a site

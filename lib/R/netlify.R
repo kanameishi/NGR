@@ -71,7 +71,15 @@ netlifyRegister <- function(alias, site, root = getwd(), create = FALSE,
 #' @param path Character vector of directories aligned with `alias`, relative to
 #'   `root` or absolute.
 #' @param prod Publish to production instead of creating a draft.
-#' @return Invisibly, the provider UUIDs named by alias.
+#' @return Invisibly, the provider UUIDs named by alias. After uploads, its
+#'   attribute `response` holds, by alias, the lines the Netlify CLI returned
+#'   for each upload; a dry run has no such attribute.
+#' @details Uploads are sequential, not a transaction. A failure after a
+#'   completed upload signals a condition of class `ngrPartialPublication`,
+#'   which inherits from `modulePartialPublication` and `moduleFailure`: its
+#'   `effects` holds the UUIDs of the completed uploads with their `response`,
+#'   and its `cause` the failure. A failure before the first completed upload
+#'   reaches the caller unchanged.
 #' @export
 netlifyDeploy <- function(alias, path, root = getwd(), prod = FALSE, dryRun = FALSE) {
   .checkNetlifyArguments(alias, values = path, flags = list(prod, dryRun))
@@ -83,17 +91,25 @@ netlifyDeploy <- function(alias, path, root = getwd(), prod = FALSE, dryRun = FA
   for (Path in path) if (!dir.exists(Path)) .fail("Deploy directory not found: ", Path)
   Ids <- .netlifyAliases(alias, registry = file.path(Root, ".netlify/sites.env"))
   if (!dryRun) for (Id in Ids) .netlifyApi("getSite", list(site_id = Id))
+  Response <- list()
   for (i in seq_along(alias)) {
     .inform("moduleProgress", alias[[i]], " path=", path[[i]], " prod=", prod,
             operation = "deploy", phase = "upload", unit = alias[[i]], path = path[[i]])
     if (dryRun) next
     Args <- c("deploy", paste0("--dir=", path[[i]]), paste0("--site=", Ids[[i]]), "--no-build")
     if (prod) Args <- c(Args, "--prod")
-    OUT <- .netlifyCommand(Args)
-    if (length(OUT)) {
-      .inform("moduleNote", paste(OUT, collapse = "\n"), operation = "deploy", phase = "upload", unit = alias[[i]])
-    }
+    # Earlier uploads stay live after a later failure; the condition carries them.
+    Response[[alias[[i]]]] <- tryCatch(.netlifyCommand(Args), error = function(e) {
+      if (!length(Response)) stop(e)
+      stop(errorCondition(
+        paste0("Upload of ", alias[[i]], " failed after ", length(Response), " completed upload(s): ",
+               conditionMessage(e), "\nuploaded: ", paste(names(Response), collapse = ", "),
+               "\nnot uploaded: ", paste(alias[seq(i, length(alias))], collapse = ", ")),
+        class = c("ngrPartialPublication", "modulePartialPublication", "moduleFailure"),
+        effects = structure(Ids[names(Response)], response = Response), cause = e))
+    })
   }
+  if (!dryRun) attr(Ids, "response") <- Response
   invisible(Ids)
 }
 

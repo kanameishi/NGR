@@ -268,7 +268,7 @@
     .loadLibrary()
     if (Action == "unbind") NGR::netlifyUnbind(Positional[[1L]])
     if (Action == "init") NGR::netlifyRegister(Positional[[1L]], site = Positional[[2L]], create = Flags$create, account = Values$account)
-    if (Action == "upload") NGR::netlifyDeploy(Positional[[1L]], path = Positional[[2L]], prod = Flags$prod)
+    if (Action == "upload") .writeResponses(NGR::netlifyDeploy(Positional[[1L]], path = Positional[[2L]], prod = Flags$prod))
     if (Action == "domain") NGR::netlifyDomain(Positional[[1L]], domain = Positional[[2L]], https = Flags$https, rebind = Flags$rebind, dryRun = Flags$dryRun)
     return(0L)
   }
@@ -287,11 +287,17 @@
     return(0L)
   }
   if (Action == "upload") {
-    NGR::netlifyDeployManifest(Values$manifest, only = Only, except = Except, prod = Flags$prod,
-                               dryRun = Flags$dryRun)
+    .writeResponses(NGR::netlifyDeployManifest(Values$manifest, only = Only, except = Except, prod = Flags$prod,
+                                               dryRun = Flags$dryRun))
     return(0L)
   }
   stop("Unsupported deploy operation: ", Action, call. = FALSE)
+}
+
+# What the Netlify CLI returned for each upload is a result: the lines of the
+# returned UUIDs' response attribute, in upload order.
+.writeResponses <- function(ids) {
+  for (Lines in attr(ids, "response")) writeLines(Lines)
 }
 
 .runCommand <- function(args, runtime) {
@@ -337,5 +343,8 @@ Runtime <- if (exists("CLI_RESOURCES")) CLI_RESOURCES else {
   # R encodes spaces as ~+~ in --file= on Unix; decode before resolving.
   dirname(normalizePath(gsub("~+~", " ", File, fixed = TRUE), winslash = "/", mustWork = TRUE))
 }
-quit(save = "no", status = .runCommand(if (exists("CLI_ARGS")) CLI_ARGS else commandArgs(trailingOnly = TRUE),
-                                       runtime = Runtime))
+# After a failure that follows completed uploads, their responses go to stdout
+# before the error reaches the renderer, which exits 1.
+quit(save = "no", status = withCallingHandlers(
+  .runCommand(if (exists("CLI_ARGS")) CLI_ARGS else commandArgs(trailingOnly = TRUE), runtime = Runtime),
+  ngrPartialPublication = function(e) .writeResponses(e$effects)))

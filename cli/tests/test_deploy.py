@@ -26,7 +26,11 @@ elif Args[0] == "sites:create":
     Name = Args[Args.index("--name") + 1]
     State.append(dict(name=Name, id="33333333-3333-3333-3333-333333333333", account_slug="test"))
 elif Args[0] == "deploy":
-    print("mock upload")
+    Site = next((x for x in State if "--site=" + x["id"] in Args), {})
+    if Site.get("uploadFails"):
+        Status = 1
+    else:
+        print("mock upload")
 elif Args[0] == "api":
     Data = json.loads(Args[Args.index("--data") + 1])
     if Args[1] == "getDnsZone":
@@ -132,6 +136,25 @@ class DeployTest(unittest.TestCase):
         Before = self.calls()
         self.runCli("init", "--manifest", "manifest.json", "--only", "one", expected=1)
         self.assertEqual(self.calls(), Before)
+
+    def testUploadResponsesAreResultsAndPartialPublicationIsRecorded(self):
+        self.runCli("init", "--manifest", "manifest.json")
+        for Flags in ((), ("--quiet",)):
+            with self.subTest(flags=Flags):
+                DATA = self.runCli(*Flags, "one", "html/one")
+                self.assertEqual(DATA.stdout, "mock upload\n")
+                self.assertNotIn("mock upload", DATA.stderr)
+        self.Sites[1]["uploadFails"] = True
+        (self.Root / "provider.json").write_text(json.dumps(self.Sites))
+        # The upload of one completed before two failed: its response stays a result and the error names both.
+        DATA = self.runCli("--manifest", "manifest.json", expected=1)
+        self.assertEqual(DATA.stdout, "mock upload\n")
+        self.assertIn("uploaded: one", DATA.stderr)
+        self.assertIn("not uploaded: two", DATA.stderr)
+        # A failure before any completed upload is the provider's error alone.
+        DATA = self.runCli("--manifest", "manifest.json", "--only", "two", expected=1)
+        self.assertEqual(DATA.stdout, "")
+        self.assertNotIn("uploaded:", DATA.stderr)
 
     def testCreateAndRetargetProtection(self):
         self.runCli("init", "new", "test-new", "--create", "--account", "test")

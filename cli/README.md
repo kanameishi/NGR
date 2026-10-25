@@ -208,8 +208,8 @@ effects.
 ### Console
 
 stdout carries the results: the requested help, the version, the `pull` and
-`status` listings, the closing `[pull]` and `[check]` lines and the `doctor`
-report. The
+`status` listings, the closing `[pull]` and `[check]` lines, the `doctor`
+report and the output the Netlify CLI returns for each upload. The
 library signals its notes and progress as R conditions of the classes
 `moduleNote` and `moduleProgress`, with the fields `operation`, `phase`, `unit`
 and `path`, and the deliberate failures of the functions the command calls as
@@ -217,8 +217,10 @@ and `path`, and the deliberate failures of the functions the command calls as
 which inherits from `moduleUsage`. The renderer `install/cli/console.R` writes
 these conditions on stderr: `--quiet` hides notes and progress, `--verbose` adds
 the fields, and given together `--quiet` prevails. `check` writes each
-declared check as a progress line on stderr and its closing line on stdout. The
-output the Netlify CLI returns for an upload is written as a note on stderr.
+declared check as a progress line on stderr and its closing line on stdout.
+When an upload fails after others completed, stdout keeps the output of the
+completed uploads, and the error, of the class `ngrPartialPublication`, names
+the uploaded and the remaining aliases and exits with status 1.
 
 An error is written as `ngr: <message>`; an error without the class
 `moduleFailure` or `moduleUsage` adds the R version and the installed NGR

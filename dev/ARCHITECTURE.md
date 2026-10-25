@@ -114,6 +114,14 @@ call (plots, tables and document writers) remain plain R warnings and errors,
 which the family table admits at the warning and failure levels; the closing
 `[pull]` and `[check]` lines keep their bracketed form on stdout as results.
 
+The output the Netlify CLI returns for each upload is a result: `netlifyDeploy()`
+returns it in the attribute `response` of its UUIDs and `cli/main.R` writes it
+on stdout. A failure after a completed upload signals `ngrPartialPublication`,
+which inherits from `modulePartialPublication`, with the completed uploads in
+`effects`; a calling handler of `cli/main.R` writes their output on stdout and
+the renderer writes the error and exits 1, as the family ruling places the
+record of effects after a partial publication.
+
 `ngr doctor` follows the owner's ruling of 2026-10-25 (AOM
 `dev/ARCHITECTURE.md`, "Doctor diagnoses"): `describeModule()` builds its JSON
 report from the five required checks of the AOM seed and from `optional`,
