@@ -37,7 +37,7 @@ a development implementation; project acceptance is in progress.
 | Register or create a Netlify site | `ngr deploy init <alias> <site-name> [--create]` | [Deploy](skills/ngr/references/deploy.md) |
 | Configure a domain and HTTPS | `ngr deploy domain <alias> <domain> [--https]` | [Domains and recovery](skills/ngr/references/domains-recovery.md) |
 | Remove a local site binding | `ngr deploy unbind <alias>` | [Domains and recovery](skills/ngr/references/domains-recovery.md) |
-| Show the installed command, package and build | `ngr --version` | |
+| Show the package version and the build commit | `ngr --version` | |
 
 `ngr --help` lists the commands, and `ngr <command> --help` gives the exact
 arguments of each, including the `--manifest` forms of `deploy`. The

@@ -178,8 +178,8 @@ operation is an exported function of the installed NGR package, loaded through
 normal R library resolution. `--help` needs no library.
 The command and the installed NGR package share one version: a
 command that needs the library names a missing one instead of failing inside
-it, and `ngr --version` reports the package version, the payload and the
-recorded build. `pull`, `status` and source checks use `NGR::pullResources()`,
+it, and `ngr --version` reports the package version and the build commit
+that the installation recorded. `pull`, `status` and source checks use `NGR::pullResources()`,
 `NGR::compareResources()` and `NGR::checkResources()`. These APIs also work
 from R without the CLI. `NGR::quartoRender()` owns staging, YAML composition,
 publication provenance, Quarto execution, DOCX repair and output delivery.

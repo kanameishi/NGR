@@ -16,25 +16,23 @@
 }
 
 .showVersion <- function(runtime) {
-  # One version per module: the command reports the installed package's, then
-  # this payload and the recorded build. The path of the library is not
-  # printed (owner rulings of 2026-10-04 and 2026-10-12).
+  # One version per module, in two lines: the installed package's, then the
+  # build (owner rulings of 2026-10-12 and 2026-10-25).
   .loadLibrary()
-  writeLines(paste("NGR", utils::packageVersion("NGR")))
-  File <- sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE)[[1L]])
-  File <- gsub("~+~", " ", File, fixed = TRUE)
-  # Lexical cleanup only (never resolve symlinks): the verifier compares the
-  # as-installed spelling, and tempfile() paths can carry a double slash.
-  File <- gsub("/{2,}", "/", File)
-  writeLines(paste0("cli: ", File))
-  Build <- "unknown"
-  Info <- file.path(runtime, "BUILD_INFO")
-  if (file.exists(Info)) {
-    Line <- grep("^git_describe=", readLines(Info, warn = FALSE), value = TRUE)
-    if (length(Line)) Build <- sub("^git_describe=", "", Line[[1L]])
-  }
-  writeLines(paste0("build: ", Build))
+  writeLines(c(paste("NGR", utils::packageVersion("NGR")), .buildLine(runtime)))
   0L
+}
+
+# The installer records the commit of the installed sources in BUILD_INFO; the
+# tag in git_describe would name a past version, so the line keeps the commit.
+.buildLine <- function(runtime) {
+  File <- file.path(runtime, "BUILD_INFO")
+  if (!file.exists(File)) return("build: unknown")
+  Info <- readLines(File, warn = FALSE)
+  Values <- sub("^[^=]*=", "", Info)
+  names(Values) <- sub("=.*", "", Info)
+  if (!grepl("^[0-9a-f]{7,}$", Values["git_commit"])) return("build: unknown")
+  paste0("build: ", substr(Values[["git_commit"]], 1L, 7L), if (identical(unname(Values["dirty"]), "true")) "-dirty")
 }
 
 .showHelp <- function() {
@@ -49,7 +47,7 @@
                "  render <input.qmd> --profile <profile>        Render through yml/_quarto*.yml (book|html|revealjs|docx)",
                "  render --manifest <file> [--dry-run]          Render or plan the manifest artifacts",
                "  deploy                                        Publish artifacts and register Netlify sites", "",
-               "  --version                                     Show the installed command, package and build", "",
+               "  --version                                     Show the package version and the build commit", "",
                "Results go to stdout; notes, progress, warnings and errors go to stderr.",
                "--verbose adds the condition fields to the stderr lines; --quiet hides notes and progress.",
                "Given together, --quiet prevails. Both count only before --.",
