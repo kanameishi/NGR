@@ -45,3 +45,8 @@ lib/R/.tmp_webshot/
 /lib/vignettes/*.pdf
 # Python bytecode caches
 __pycache__/
+# Skill copies the front door brings into this repository, and their receipts
+.claude/skills/
+.claude/agents-skills.json
+.agents/skills/
+.agents/agents-skills.json
