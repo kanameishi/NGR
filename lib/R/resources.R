@@ -594,7 +594,7 @@ checkResources <- function(source = NULL, root = getwd()) {
     if (!Name %in% names(Project$scaffolds)) .fail("Unknown registered source: ", Name)
     for (Check in Project$scaffolds[[Name]]$checks) {
       Args <- unlist(Check, use.names = FALSE)
-      .inform("moduleProgress", Name, ": ", paste(Args, collapse = " "), operation = "doctor", unit = Name)
+      .inform("moduleProgress", Name, ": ", paste(Args, collapse = " "), operation = "check", unit = Name)
       Status <- system2(Args[[1L]], args = shQuote(Args[-1L]))
       if (Status != 0L) .fail("Source check failed: ", Name, " (exit ", Status, ")")
       Checks[[length(Checks) + 1L]] <- list(source = Name, command = Check, status = Status)

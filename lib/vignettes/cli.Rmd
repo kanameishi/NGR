@@ -84,6 +84,7 @@ After installation, verify the selected environment:
 
 ```sh
 ngr --version
+ngr doctor
 ngr --help
 ```
 
@@ -108,12 +109,12 @@ ngr render --root /path/to/project --manifest manifest.json --dry-run
 
 The source manifest and master in this example must already exist. They are
 project choices, not files supplied by the installation. Review the source's
-declared checks before running `doctor`.
+declared checks before running `check`.
 
 ```sh
 ngr pull --from ngr --from /path/to/book/manifest.json
 ngr status --check
-ngr doctor
+ngr check
 ngr render --manifest manifest.json --dry-run
 ngr render _master/book.en.qmd --profile book
 ```

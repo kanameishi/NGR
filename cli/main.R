@@ -43,7 +43,8 @@
                "  pull   --from <manifest.json> [paths...]      Bring resources from a source into the project",
                "  pull   [--force] [--dry-run] [paths...]       Update the project from its recorded sources",
                "  status [--check] [paths...]                   Compare the project with its sources",
-               "  doctor                                        Check the project against its declared checks",
+               "  check  [--source ID]                          Check the project against its declared checks",
+               "  doctor                                        Diagnose this installation and print one JSON report",
                "  render <input.qmd> --profile <profile>        Render through yml/_quarto*.yml (book|html|revealjs|docx)",
                "  render --manifest <file> [--dry-run]          Render or plan the manifest artifacts",
                "  deploy                                        Publish artifacts and register Netlify sites", "",
@@ -99,7 +100,7 @@
       if (Flag == "--check") Check <- TRUE
       next
     }
-    if (Command == "doctor") .failUsage("Unknown argument: ", Arg)
+    if (Command == "check") .failUsage("Unknown argument: ", Arg)
     Values$paths <- c(Values$paths, Arg)
   }
   if (Help) {
@@ -126,10 +127,34 @@
                       ifelse(Result$files$modified, "\tlocally-modified", "")))
     return(as.integer(Check && Result$changed))
   }
-  message(messageCondition(paste0("NGR ", utils::packageVersion("NGR"), "\n"), class = "moduleNote", operation = "doctor"))
+  message(messageCondition(paste0("NGR ", utils::packageVersion("NGR"), "\n"), class = "moduleNote", operation = "check"))
   NGR::checkResources(source = Values$source)
-  writeLines("[doctor] declared checks passed")
+  writeLines("[check] declared checks passed")
   0L
+}
+
+# doctor diagnoses this installation and repairs nothing (owner ruling of
+# 2026-10-25); the checks the project's sources declare run under check.
+.runDoctor <- function(args, runtime) {
+  if (length(args) == 1L && args %in% c("--help", "-h")) {
+    writeLines(c("Usage: ngr doctor",
+                 "Diagnoses this installation without repairs, takes no arguments and prints one JSON report on stdout;",
+                 "exits 0 when every required check passes and 1 otherwise.",
+                 "Required checks:",
+                 "  library   the library loads with the version of lib/DESCRIPTION",
+                 "  exports   the exports declared in install/requirements.R exist",
+                 "  packages  the packages declared in install/requirements.R load",
+                 "  tools     the tools declared in install/requirements.R are on PATH",
+                 "  receipt   the files of the installation receipt keep their recorded MD5",
+                 "Checks that warn instead of failing:",
+                 "  optional  the optional tools declared in install/requirements.R are on PATH"))
+    return(0L)
+  }
+  if (length(args)) .failUsage("doctor takes no arguments: ", paste(args, collapse = " "))
+  .loadLibrary()
+  Report <- NGR::describeModule(runtime)
+  writeLines(jsonlite::toJSON(Report, auto_unbox = TRUE, pretty = TRUE))
+  if (identical(Report$summary$status, "ok")) 0L else 1L
 }
 
 .runRender <- function(args, runtime) {
@@ -295,7 +320,8 @@
     if (length(args) != 1L) .failUsage("--version takes no arguments")
     return(.showVersion(runtime))
   }
-  if (Command %in% c("pull", "status", "doctor")) return(.runResources(args, runtime = runtime))
+  if (Command %in% c("pull", "status", "check")) return(.runResources(args, runtime = runtime))
+  if (Command == "doctor") return(.runDoctor(args[-1L], runtime = runtime))
   if (Command == "render") return(.runRender(args[-1L], runtime = runtime))
   if (Command == "deploy") return(.runDeploy(args[-1L], runtime = runtime))
   .failUsage("Unknown command: ", Command, "; use ngr --help")

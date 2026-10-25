@@ -69,7 +69,7 @@ class ResourceApiTest(unittest.TestCase):
             self.assertEqual(DATA.returncode, 0, DATA.stdout + DATA.stderr)
 
     @unittest.skipUnless(NGR_RESOURCE_REFERENCE, "requires the preserved resource CLI")
-    def testDeclaredDoctorChecksParity(self):
+    def testDeclaredChecksParity(self):
         with tempfile.TemporaryDirectory(dir=NGR_TEST_ROOT) as DIR:
             Root = Path(DIR)
             Script = Root / "check resources.R"
@@ -83,13 +83,15 @@ class ResourceApiTest(unittest.TestCase):
             for Failure in (False, True):
                 if Failure:
                     Script.write_text('stop("declared failure")')
-                Results = [subprocess.run([Binary, "doctor", "--source", "source"],
+                # The reference runs the declared checks under doctor; this command runs them under check.
+                Results = [subprocess.run([Binary, Verb, "--source", "source"],
                     cwd=Project, capture_output=True, text=True)
-                    for Binary, Project in zip((NGR_RESOURCE_REFERENCE, NGR_TEST_BIN), Projects)]
+                    for Binary, Verb, Project in zip((NGR_RESOURCE_REFERENCE, NGR_TEST_BIN), ("doctor", "check"), Projects)]
                 for Result in Results:
                     self.assertEqual(Result.returncode, int(Failure), Result.stdout + Result.stderr)
-                # Each declared check is now a progress line on stderr; stdout keeps the report.
-                self.assertEqual([x for x in Results[0].stdout.splitlines() if not x.startswith("[doctor] source: ")],
+                # Each declared check is now a progress line on stderr; stdout keeps the closing line.
+                self.assertEqual([x.replace("[doctor]", "[check]", 1) for x in Results[0].stdout.splitlines()
+                                  if not x.startswith("[doctor] source: ")],
                                  Results[1].stdout.splitlines())
                 self.assertIn("source: ", Results[1].stderr)
                 for Project in Projects:

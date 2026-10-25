@@ -1,5 +1,20 @@
 # NGR 0.4.1
 
+## Command line
+
+* `ngr doctor` diagnoses the installation without repairs and prints one JSON
+  report, the result of `describeModule()` on the resources of the installed
+  command: the checks `library`, `exports`, `packages`, `tools` and `receipt`
+  are required, and `optional` (the optional tools of `install/requirements.R`
+  on `PATH`) warns instead of failing. It exits 1 when a required check fails,
+  takes no arguments, and `ngr doctor --help` lists the checks.
+* `ngr check` runs the checks that the project's sources declare, which
+  `ngr doctor` ran before; its closing line on stdout is
+  `[check] declared checks passed`.
+* `ngr --version` prints two lines: the package and its version, then `build:`
+  with the commit of the installed sources that the installer recorded,
+  `-dirty` when they were not committed, or `unknown`.
+
 ## Identity of the rendered documents
 
 * The page footer of books and HTML documents no longer carries a corporate

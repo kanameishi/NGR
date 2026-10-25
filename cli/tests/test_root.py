@@ -49,7 +49,7 @@ class RootTest(unittest.TestCase):
         self.assertEqual((self.Project / "note.txt").read_text(), "source data")
         self.assertFalse((self.Root / "manifest.json").exists())
         self.runCli("status", f"--root={self.Project}", "--check")
-        self.runCli("doctor", "--root", self.Project)
+        self.runCli("check", "--root", self.Project)
         (self.Project / "html/page").mkdir(parents=True)
         (self.Project / "html/page/index.html").write_text("static data")
         Manifest = self.Project / "manifest.json"

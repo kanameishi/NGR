@@ -86,7 +86,7 @@ class ResourcesTest(unittest.TestCase):
         for Both in (False, True):
             if Both:
                 (self.Project / "manifest.json").write_text(Content)
-            for Args in (("pull", "--from", Source, "--force"), ("status",), ("doctor",)):
+            for Args in (("pull", "--from", Source, "--force"), ("status",), ("check",)):
                 with self.subTest(both=Both, args=Args):
                     self.runCli(*Args)
             self.assertEqual((self.Project / "qrt.manifest.json").read_text(), Content)

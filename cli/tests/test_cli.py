@@ -25,7 +25,7 @@ class CliTest(unittest.TestCase):
         for Command, Present, Absent in (
             ("pull", ("--from", "--source", "--force", "--dry-run", "TARGETS"), ("--check",)),
             ("status", ("--from", "--source", "--check", "TARGETS"), ("--force", "--dry-run")),
-            ("doctor", ("--source",), ("--from", "--force", "--dry-run", "--check", "TARGETS")),
+            ("check", ("--source",), ("--from", "--force", "--dry-run", "--check", "TARGETS")),
         ):
             with self.subTest(command=Command):
                 DATA = self.runCli(Command, "--help")
@@ -40,7 +40,8 @@ class CliTest(unittest.TestCase):
 
     def testResourceOptionsRejectInvalidCommands(self):
         for Args in (("pull", "--check"), ("status", "--force"),
-                     ("status", "--dry-run"), ("doctor", "--from", "ngr"),
+                     ("status", "--dry-run"), ("check", "--from", "ngr"),
+                     ("check", "scripts"), ("doctor", "--from", "ngr"),
                      ("doctor", "scripts")):
             with self.subTest(args=Args):
                 DATA = self.runCli(*Args)
@@ -86,12 +87,12 @@ class CliTest(unittest.TestCase):
         self.assertEqual((DATA.returncode, DATA.stderr), (0, ""))
         self.assertIn("ngr deploy unbind <alias>", DATA.stdout)
         Version = self.runCli("--version").stdout.splitlines()[0]
-        for Flags, Note in (((), Version), (("--quiet",), None), (("--verbose",), Version + " [operation=doctor]"),
+        for Flags, Note in (((), Version), (("--quiet",), None), (("--verbose",), Version + " [operation=check]"),
                             (("--verbose", "--quiet"), None)):
             with self.subTest(flags=Flags):
-                DATA = self.runCli(*Flags, "doctor")
+                DATA = self.runCli(*Flags, "check")
                 self.assertEqual(DATA.returncode, 0, DATA.stdout + DATA.stderr)
-                self.assertEqual(DATA.stdout, "[doctor] declared checks passed\n")
+                self.assertEqual(DATA.stdout, "[check] declared checks passed\n")
                 self.assertEqual(DATA.stderr, "" if Note is None else Note + "\n")
         self.assertEqual(list(self.Root.iterdir()), [])
 

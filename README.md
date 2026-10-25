@@ -30,13 +30,14 @@ a development implementation; project acceptance is in progress.
 | Bring resources from a source into the project | `ngr pull --from <manifest.json> [paths...]` | [Resources](skills/ngr/references/resources-manifest.md#resources) |
 | Update the project from its recorded sources | `ngr pull [--force] [--dry-run] [paths...]` | [Resources](skills/ngr/references/resources-manifest.md#resources) |
 | Compare the project with its sources | `ngr status [--check] [paths...]` | [Resources](skills/ngr/references/resources-manifest.md#resources) |
-| Check the project against its declared checks | `ngr doctor` | [Resources](skills/ngr/references/resources-manifest.md#resources) |
+| Check the project against its declared checks | `ngr check` | [Resources](skills/ngr/references/resources-manifest.md#resources) |
 | Render a master with the book, html, revealjs or docx profile | `ngr render <input.qmd> --profile <profile>` | [Render](skills/ngr/references/render.md) |
 | Render or plan the artifacts of a manifest | `ngr render --manifest <file> [--dry-run]` | [Render](skills/ngr/references/render.md) |
 | Upload an existing output | `ngr deploy <alias> <dir> [--prod]` | [Deploy](skills/ngr/references/deploy.md) |
 | Register or create a Netlify site | `ngr deploy init <alias> <site-name> [--create]` | [Deploy](skills/ngr/references/deploy.md) |
 | Configure a domain and HTTPS | `ngr deploy domain <alias> <domain> [--https]` | [Domains and recovery](skills/ngr/references/domains-recovery.md) |
 | Remove a local site binding | `ngr deploy unbind <alias>` | [Domains and recovery](skills/ngr/references/domains-recovery.md) |
+| Diagnose this installation | `ngr doctor` | |
 | Show the package version and the build commit | `ngr --version` | |
 
 `ngr --help` lists the commands, and `ngr <command> --help` gives the exact

@@ -143,7 +143,7 @@ file is removed in a later commit.
 ```sh
 ngr pull --from ngr --from /path/to/sha/manifest.json --force
 ngr status --check
-ngr doctor
+ngr check
 ```
 
 Name destination folders after the manifests to enroll only part of a source.

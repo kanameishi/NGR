@@ -63,6 +63,10 @@ reference:
       - compareResources
       - checkResources
 
+  - title: Installation diagnosis
+    contents:
+      - describeModule
+
   - title: Quarto rendering
     contents:
       - quartoRender

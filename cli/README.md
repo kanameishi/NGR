@@ -52,7 +52,7 @@ project; this is not a sequence that creates a complete scientific report.
 ```sh
 ngr pull --from ngr --from /path/to/book/manifest.json
 ngr status --check
-ngr doctor
+ngr check
 ngr pull --source sha scripts _fig --force
 ngr render --manifest manifest.json --dry-run --only report
 ngr render _master/book.en.qmd --profile book
@@ -83,9 +83,17 @@ concurrent-writer transactionality is not promised.
 
 `status` compares source, project and per-file receipt; `--check` exits 1 for
 drift/missing/retired files. Edited seeds are reported as project-owned.
-`doctor` reports the loaded R package and runs the checks explicitly declared
+`check` reports the loaded R package and runs the checks explicitly declared
 by the registered sources. Source checks are argv arrays executed in the project,
 so review a source before running its checks. Neither command updates resources.
+
+`doctor` diagnoses the installation without repairs and takes no arguments: it
+reads the installed resources, writes nothing and prints one JSON report on
+stdout with `schema`, `package`, `version`, `summary.status` and `checks`. The
+checks `library`, `exports`, `packages`, `tools` and `receipt` are required;
+`optional`, the optional tools of `install/requirements.R` on `PATH`, warns
+instead of failing. It exits 0 when every required check passes and 1
+otherwise, and `ngr doctor --help` lists the checks.
 
 ## Source manifest
 
@@ -200,15 +208,16 @@ effects.
 ### Console
 
 stdout carries the results: the requested help, the version, the `pull` and
-`status` listings, the closing `[pull]` line and the `doctor` report. The
+`status` listings, the closing `[pull]` and `[check]` lines and the `doctor`
+report. The
 library signals its notes and progress as R conditions of the classes
 `moduleNote` and `moduleProgress`, with the fields `operation`, `phase`, `unit`
 and `path`, and the deliberate failures of the functions the command calls as
 `moduleFailure`. Usage errors of `cli/main.R` have the class `ngrUsageError`,
 which inherits from `moduleUsage`. The renderer `install/cli/console.R` writes
 these conditions on stderr: `--quiet` hides notes and progress, `--verbose` adds
-the fields, and given together `--quiet` prevails. `doctor` writes each
-declared check as a progress line on stderr and its report on stdout. The
+the fields, and given together `--quiet` prevails. `check` writes each
+declared check as a progress line on stderr and its closing line on stdout. The
 output the Netlify CLI returns for an upload is written as a note on stderr.
 
 An error is written as `ngr: <message>`; an error without the class

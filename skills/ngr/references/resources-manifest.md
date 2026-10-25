@@ -79,16 +79,16 @@ the real `params.project_id` from the user-validated project contract; a missing
 or template value leaves artifact seeding pending. Inspect the declarations before
 rendering or publishing.
 
-### Doctor
+### Check
 
 ```text
-ngr doctor --source <id>
+ngr check --source <id>
 ```
 
-Doctor validates source claims and runs its recorded `checks` in the project
+Check validates source claims and runs its recorded `checks` in the project
 directory. Read those checks before execution: each is an argv array, such as
 `["Rscript", "scripts/check.R"]`, and can write files or run calculations.
-Use doctor when those checks serve the requested task; it is not mandatory
+Use check when those checks serve the requested task; it is not mandatory
 before every render. A failure names the check/source to diagnose and may
 reflect missing project inputs.
 

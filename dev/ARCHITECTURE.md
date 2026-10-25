@@ -112,8 +112,14 @@ command's console, outside the renderer; the functions named in
 the errors and warnings of the functions that the command's operations do not
 call (plots, tables and document writers) remain plain R warnings and errors,
 which the family table admits at the warning and failure levels; the closing
-`[pull]` line and the `doctor` report keep their bracketed form on stdout as
-results.
+`[pull]` and `[check]` lines keep their bracketed form on stdout as results.
+
+`ngr doctor` follows the owner's ruling of 2026-10-25 (AOM
+`dev/ARCHITECTURE.md`, "Doctor diagnoses"): `describeModule()` builds its JSON
+report from the five required checks of the AOM seed and from `optional`,
+which warns for the optional tools of `install/requirements.R`. The checks
+that a project's sources declare can write files, so they run under
+`ngr check`, the command that ran them as `doctor` before that ruling.
 
 ## Documentation and Pages
 
