@@ -24,8 +24,8 @@ local({
     if (Doctor) .doctorProduct(CLI_RESOURCES)
   }, error = function(e) {
     if (!Doctor) stop(e)
-    list(schema = 1L, package = "AOM", summary = list(status = "fail", ok = 0L, fail = 1L, skipped = 0L),
-         checks = list(list(name = "bootstrap", status = "fail", detail = conditionMessage(e))))
+    list(schema = 1L, package = "AOM", version = NULL, summary = list(status = "fail", ok = 0L, fail = 1L),
+         checks = list(list(name = "bootstrap", required = TRUE, status = "fail", detail = conditionMessage(e))))
   })
   if (Doctor) {
     if (!requireNamespace("jsonlite", quietly = TRUE)) {

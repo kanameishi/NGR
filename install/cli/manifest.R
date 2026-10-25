@@ -107,10 +107,10 @@
   check <- function(name, expr) {
     tryCatch({
       OUT <- force(expr)
-      Checks[[length(Checks) + 1L]] <<- list(name = name, status = "ok", detail = OUT)
+      Checks[[length(Checks) + 1L]] <<- list(name = name, required = TRUE, status = "ok", detail = OUT)
       TRUE
     }, error = function(e) {
-      Checks[[length(Checks) + 1L]] <<- list(name = name, status = "fail", detail = conditionMessage(e))
+      Checks[[length(Checks) + 1L]] <<- list(name = name, required = TRUE, status = "fail", detail = conditionMessage(e))
       FALSE
     })
   }
@@ -133,7 +133,13 @@
       paste(Record$package$name, Record$package$version, "loads with its CLI dependencies and exports")
     })
   }
-  if (!Valid) Checks[[length(Checks) + 1L]] <- list(name = "package", status = "skipped", detail = "Loading refused because installation integrity failed")
+  if (!Valid) Checks[[length(Checks) + 1L]] <- list(name = "package", required = TRUE, status = "fail", detail = "Loading refused because installation integrity failed")
+  check("tools", {
+    Tools <- source(file.path(root, "install/requirements.R"), local = TRUE)$value$tools
+    Missing <- Tools[!nzchar(Sys.which(Tools))]
+    if (length(Missing)) stop("Declared tools not on PATH: ", paste(Missing, collapse = ", "))
+    if (length(Tools)) paste("On PATH:", paste(Tools, collapse = ", ")) else "No tools declared"
+  })
   check("command", {
     Command <- sub("-cli$", "", Record$product)
     if (length(Command) != 1L || !grepl("^[a-z][a-z0-9-]*$", Command)) stop("Invalid command in installation receipt")
@@ -144,7 +150,6 @@
   })
   Status <- vapply(Checks, `[[`, character(1L), "status")
   list(schema = 1L, package = Record$package$name, version = Record$package$version,
-       summary = list(status = if (all(Status == "ok")) "ok" else "fail",
-                      ok = sum(Status == "ok"), fail = sum(Status == "fail"), skipped = sum(Status == "skipped")),
+       summary = list(status = if (all(Status == "ok")) "ok" else "fail", ok = sum(Status == "ok"), fail = sum(Status == "fail")),
        checks = Checks)
 }

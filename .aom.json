@@ -2,7 +2,7 @@
   "schema": 1,
   "model": "AOM",
   "release": "0.5.8",
-  "sha256": "9a0cf20ea465890c6a4b4e2a551cd712443041177f06617de24e7c0e77ca94da",
+  "sha256": "6839f03e2246f2c31711953654e31b47f6789e6315b7bb2adb55b800abedf7ae",
   "package": "NGR",
   "language": "R",
   "answers": null,
@@ -64,7 +64,7 @@
     },
     {
       "path": "install/cli/testConsole.R",
-      "sha256": "d2f75bcf38a0ebd43b5bd0499fc882a2307f1802ce87306758219c2300bd1da0",
+      "sha256": "c6f6b69fb844f942f60066476f8227ae319d0e0e42512a54aa429e22068d3e02",
       "mode": "0644"
     },
     {
@@ -84,7 +84,7 @@
     },
     {
       "path": "install/cli/testProduct.R",
-      "sha256": "ff3b1cd4082e603de6a2610ef428bbe9ca9291997b762ecfdb269c84a865b008",
+      "sha256": "bc9f348efbef1c84fe9d20f9905cce98d1d88386e63c150540b0eff935119f10",
       "mode": "0644"
     },
     {
@@ -139,22 +139,22 @@
     },
     {
       "path": "install/USAGE.md",
-      "sha256": "8d7d51cb6f277b45bbe5ac585621c66ebdc24107616f14732b81e1dde145b9e0",
+      "sha256": "08a76a885730dd51cbffc45cef937d4f344b9703123dc8d8a0769cd87ee2a453",
       "mode": "0644"
     },
     {
       "path": "install/cli/manifest.R",
-      "sha256": "f83386b2c67e6e113d82cb915440403a55618848c1a8e33c20241e2dcfadb2b1",
+      "sha256": "efb69239512b144632e7bf70d78007257d77136626b969006bcaae84c041ab85",
       "mode": "0644"
     },
     {
       "path": "install/cli/entry.R",
-      "sha256": "c029f93295949a99d997bdf83b2e2ed86c0a35576d9ae2fe138a97a9443fb01a",
+      "sha256": "ebad1e6b634f8a182a145a9a391ac7826cd13d0702390f296d423e0039cf85f1",
       "mode": "0644"
     },
     {
       "path": "install/cli/console.R",
-      "sha256": "e47d6d75585611e30506b1a75f156b81efbb1b751c29004e8edc544bf36adb9f",
+      "sha256": "d467dd8976005e0646037e00d955d4d45ad94e034bcd009eacbc1b00e3f8cce1",
       "mode": "0644"
     },
     {

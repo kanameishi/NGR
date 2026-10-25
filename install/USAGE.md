@@ -154,7 +154,14 @@ payload files. Domain code and public APIs remain product-owned.
 
 `bash install/cli/test-installers.sh [R_LIBRARY]` runs disposable fixtures.
 Supplying an installed library also runs `install/acceptance.R` through the
-installed CLI without replacing that library. Windows uses
+installed CLI without replacing that library. That product acceptance,
+`install/cli/testProduct.R`, requires `--version` to print two lines,
+`<package> <version>` and `build: <short commit>` with a prefix of the commit
+that `BUILD_INFO` records, or `build: unknown` when it records none. It runs
+`doctor` and requires one JSON report on stdout with `schema`, `package`,
+`version`, `summary.status` and `checks`, exit status 1 exactly when a
+required check fails and 0 otherwise, every check named by `doctor --help`,
+and exit status 2 for an argument. Windows uses
 `powershell -File install/cli/test-installers.ps1 [-Library R_LIBRARY]`.
 The internal manager supports these isolated CLI tests; it is not a public
 partial-installation mode.

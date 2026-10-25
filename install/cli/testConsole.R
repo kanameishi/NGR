@@ -7,7 +7,9 @@ runChecks <- function(kit) {
   Runtime <- file.path(Prefix, "libexec/consoleprobe")
   dir.create(file.path(Runtime, "install/cli"), recursive = TRUE)
   stopifnot(file.copy(file.path(kit, "cli", c("entry.R", "console.R")), file.path(Runtime, "install/cli")))
+  # A main.R may rebind the entry's names (hazard and xemd assign Args); the handlers keep their flags.
   writeLines(c(
+    'Args <- CLI_ARGS; Record <- NULL',
     'family <- function(class, text, ...) message(messageCondition(text, ..., class = class))',
     'switch(CLI_ARGS[1L],',
     '  echo = writeLines(CLI_ARGS[-1L]),',
@@ -120,6 +122,6 @@ runChecks <- function(kit) {
   write("# changed after installation", file.path(Runtime, "install/cli/console.R"), append = TRUE)
   OUT <- runEntry("echo", status = 1L)
   stopifnot(!length(OUT$stdout), any(grepl("Installed console renderer hash mismatch", OUT$stderr, fixed = TRUE)))
-  message("PASS console: levels, quiet, verbose fields, NO_COLOR off a terminal, flags before --, --quiet over --verbose, error lines and fields, exit statuses 1, 2, 3 and 130, terminal symbols and colours, renderer hash")
+  message("PASS console: levels, quiet, verbose fields, flags kept when main.R rebinds Args, NO_COLOR off a terminal, flags before --, --quiet over --verbose, error lines and fields, exit statuses 1, 2, 3 and 130, terminal symbols and colours, renderer hash")
 }
 runChecks(normalizePath(commandArgs(TRUE)[1L], mustWork = TRUE))

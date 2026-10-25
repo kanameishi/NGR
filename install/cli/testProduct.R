@@ -52,11 +52,30 @@ runChecks <- function(root, library) {
   stopifnot(!dir.exists(Prefix))
   runCommand(Rscript, c("--vanilla", file.path(root, "install/cli/manage.R"), "install", Prefix))
   runCommand(Launcher, "--help")
-  # One version per module: the first line of --version is the package and its version, and no
-  # other line reports a version of the command.
-  Version <- runCommand(Launcher, "--version")
-  stopifnot(identical(Version[1L], paste(Package, utils::packageVersion(Package, lib.loc = library))),
-            !any(grepl("\\bCLI\\b.*[0-9]+[.][0-9]+", Version)))
+  # One version per module, in two lines: the package and its version, then the commit that the
+  # installer recorded in BUILD_INFO, or unknown when it recorded none.
+  Version <- runStreams(Launcher, "--version")$stdout
+  Commit <- sub("^git_commit=", "", grep("^git_commit=", readLines(file.path(Prefix, "libexec", Runtime, "BUILD_INFO")), value = TRUE)[1L])
+  stopifnot(length(Version) == 2L,
+            identical(Version[1L], paste(Package, utils::packageVersion(Package, lib.loc = library))),
+            grepl("^build: ([0-9a-f]{7,40}(-dirty)?|unknown)$", Version[2L]),
+            if (grepl("^[0-9a-f]{7,}$", Commit)) startsWith(Commit, sub("-dirty$", "", sub("^build: ", "", Version[2L])))
+            else identical(Version[2L], "build: unknown"))
+  # doctor diagnoses: one JSON report on stdout whose exit status follows its required checks,
+  # the checks listed by doctor --help, and no arguments.
+  Streams <- tempfile(c("doctor-", "doctor-"), tmpdir = Work)
+  Status <- system2(Launcher, "doctor", stdout = Streams[1L], stderr = Streams[2L])
+  Report <- jsonlite::fromJSON(paste(readLines(Streams[1L]), collapse = "\n"), simplifyVector = FALSE)
+  Failed <- vapply(Report$checks, function(x) isTRUE(x$required) && identical(x$status, "fail"), logical(1L))
+  stopifnot(identical(Report$schema, 1L), identical(Report$package, unname(Package)),
+            identical(Report$version, as.character(utils::packageVersion(Package, lib.loc = library))),
+            length(Report$checks) > 0L, identical(Report$summary$status, if (any(Failed)) "fail" else "ok"),
+            Status == if (any(Failed)) 1L else 0L,
+            all(vapply(Report$checks, function(x) is.character(x$name) && nzchar(x$name) && is.logical(x$required) &&
+                         isTRUE(x$status %in% c("ok", "warn", "fail")) && is.character(x$detail), logical(1L))))
+  Help <- runCommand(Launcher, c("doctor", "--help"))
+  stopifnot(all(vapply(Report$checks, function(x) any(grepl(x$name, Help, fixed = TRUE)), logical(1L))))
+  runCommand(Launcher, c("doctor", "--unexpected"), status = 2L)
   Record <- jsonlite::read_json(file.path(Prefix, "libexec", Runtime, "install.json"), simplifyVector = TRUE)
   stopifnot(identical(unname(tools::md5sum(file.path(Prefix, Record$file))), Record$md5))
   Acceptance <- file.path(root, "install/acceptance.R")

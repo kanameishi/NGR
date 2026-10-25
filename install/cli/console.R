@@ -2,6 +2,9 @@
 # installation recorded; the library signals classed conditions and only these
 # handlers draw them, on stderr.
 .consoleHandlers <- function(command, package, verbose, quiet, terminal, colour) {
+  # The handlers run while entry.R sources main.R in the frame that computed these arguments, and a
+  # main.R may rebind the names they read (Args, Record): the values are fixed here, not at first use.
+  force(command); force(package); force(verbose); force(quiet); force(terminal); force(colour)
   # Symbol and ANSI colour of each level: blue, cyan, grey, yellow and red.
   Levels <- list(moduleNote = c("i", "34"), moduleProgress = c(">", "36"), moduleDetail = c(".", "90"),
                  warning = c("!", "33"), error = c("x", "31"))
