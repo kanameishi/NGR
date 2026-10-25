@@ -2,7 +2,7 @@
   "schema": 1,
   "model": "AOM",
   "release": "0.5.8",
-  "sha256": "6839f03e2246f2c31711953654e31b47f6789e6315b7bb2adb55b800abedf7ae",
+  "sha256": "2baea4e855bf157040160fc8101a67d758e59f08525c2c7427d838820f2d22e1",
   "package": "NGR",
   "language": "R",
   "answers": null,
@@ -169,7 +169,7 @@
     },
     {
       "path": "lib/inst/build.R",
-      "sha256": "4053b55b4fa9743321d132c825de51407756334b76c9cdaeb3504117605215f1",
+      "sha256": "39e47a6c90cefbc1fde5bdcb63a7d790c513ed2d6ce38128d51c8f7bf598c51f",
       "mode": "0644"
     },
     {
