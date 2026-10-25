@@ -26,3 +26,12 @@
 ^lib$
 ^_site$
 ^\.github$
+^inst/install\.R$
+^inst/package\.R$
+^inst/build\.R$
+^inst/rhub\.R$
+^inst/cran-check\.R$
+^inst/cran-submit\.R$
+^inst/rhub-check\.R$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
