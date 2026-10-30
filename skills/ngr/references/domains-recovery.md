@@ -40,7 +40,11 @@ Verify according to the requested result:
 
 A task limited to binding can close with that observed effect and state which
 serving layers remain unverified. A later batch failure does not revert earlier
-bindings; reconcile changed/unknown sites and resume the unfinished scope.
+bindings. A failure after a completed effect exits 1 with one tab-separated
+line per completed effect on stdout: the alias, then `cleared` with the site
+UUID, `bound` with the domain or `https` with the domain; the error names those
+aliases and the ones not configured. Reconcile changed/unknown sites and resume
+the unfinished scope.
 
 ## Remove a local binding
 

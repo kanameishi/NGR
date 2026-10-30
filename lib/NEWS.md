@@ -17,6 +17,14 @@
   upload signals `ngrPartialPublication`, which inherits from
   `modulePartialPublication` and `moduleFailure` and holds the completed
   uploads in `effects`; the command writes their output on stdout and exits 1.
+* `ngr deploy init` and `ngr deploy domain` record the effects completed
+  before a later failure. `netlifyRegister()` and `netlifyDomain()` signal
+  `ngrPartialPublication` with a data frame of the completed effects in
+  `effects`, with the columns `alias`, `action` and `value`: `created` and
+  `registered` for init, `cleared`, `bound` and `https` for domain. The command
+  writes one line per effect on stdout, with its alias, action and value
+  separated by tabs; the error names the aliases of each completed action and
+  those not registered or not configured, and the command exits 1.
 * `ngr --version` prints two lines: the package and its version, then `build:`
   with the commit of the installed sources that the installer recorded,
   `-dirty` when they were not committed, or `unknown`.

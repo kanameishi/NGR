@@ -300,6 +300,14 @@
   for (Lines in attr(ids, "response")) writeLines(Lines)
 }
 
+# The record of a partial publication: the output of the completed uploads, or
+# one line per completed registration or domain effect with its alias, action
+# and value, separated by tabs as pull lists its actions.
+.writeEffects <- function(effects) {
+  if (is.data.frame(effects)) writeLines(paste(effects$alias, effects$action, effects$value, sep = "\t"))
+  if (!is.data.frame(effects)) .writeResponses(effects)
+}
+
 .runCommand <- function(args, runtime) {
   IDX <- which((args == "--root" | startsWith(args, "--root=")) &
                  seq_along(args) < match("--", args, nomatch = length(args) + 1L))
@@ -343,8 +351,8 @@ Runtime <- if (exists("CLI_RESOURCES")) CLI_RESOURCES else {
   # R encodes spaces as ~+~ in --file= on Unix; decode before resolving.
   dirname(normalizePath(gsub("~+~", " ", File, fixed = TRUE), winslash = "/", mustWork = TRUE))
 }
-# After a failure that follows completed uploads, their responses go to stdout
+# After a failure that follows completed effects, their record goes to stdout
 # before the error reaches the renderer, which exits 1.
 quit(save = "no", status = withCallingHandlers(
   .runCommand(if (exists("CLI_ARGS")) CLI_ARGS else commandArgs(trailingOnly = TRUE), runtime = Runtime),
-  ngrPartialPublication = function(e) .writeResponses(e$effects)))
+  ngrPartialPublication = function(e) .writeEffects(e$effects)))

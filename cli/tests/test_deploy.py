@@ -24,7 +24,10 @@ if Args[0] == "sites:list":
     print(json.dumps(State))
 elif Args[0] == "sites:create":
     Name = Args[Args.index("--name") + 1]
-    State.append(dict(name=Name, id="33333333-3333-3333-3333-333333333333", account_slug="test"))
+    if any(x["name"] == Name for x in State):
+        Status = 1
+    else:
+        State.append(dict(name=Name, id="33333333-3333-3333-3333-333333333333", account_slug="test"))
 elif Args[0] == "deploy":
     Site = next((x for x in State if "--site=" + x["id"] in Args), {})
     if Site.get("uploadFails"):
@@ -39,7 +42,9 @@ elif Args[0] == "api":
     Site = next((x for x in State if x["id"] == Data["site_id"]), None)
     if Site is None:
         sys.exit(1)
-    if Args[1] == "getSite":
+    if Site.get("fails") == Args[1]:
+        Status = 1
+    elif Args[1] == "getSite":
         print(json.dumps(Site))
     elif Args[1] == "updateSite":
         Site.update(Data["body"])
@@ -155,6 +160,42 @@ class DeployTest(unittest.TestCase):
         DATA = self.runCli("--manifest", "manifest.json", "--only", "two", expected=1)
         self.assertEqual(DATA.stdout, "")
         self.assertNotIn("uploaded:", DATA.stderr)
+
+    def testPartialRegistrationIsRecorded(self):
+        # The site name test-elsewhere is taken in another account, so the provider refuses to create it for test.
+        self.Sites.append(dict(name="test-elsewhere", id="44444444-4444-4444-4444-444444444444", account_slug="other"))
+        (self.Root / "provider.json").write_text(json.dumps(self.Sites))
+        self.Artifacts[1]["siteSlug"] = "test-elsewhere"
+        self.writeManifest()
+        # one was registered before the creation for two failed: the record is a result and the error names both.
+        DATA = self.runCli("init", "--manifest", "manifest.json", "--create", "--account", "test", expected=1)
+        self.assertEqual(DATA.stdout, "one\tregistered\t11111111-1111-1111-1111-111111111111\n")
+        self.assertIn("registered: one\nnot registered: two", DATA.stderr)
+        self.assertEqual((self.Root / ".netlify/sites.env").read_text(), "one=11111111-1111-1111-1111-111111111111\n")
+        # A failure before any effect is the provider's error alone.
+        DATA = self.runCli("init", "--manifest", "manifest.json", "--only", "two", "--create", "--account", "test", expected=1)
+        self.assertEqual(DATA.stdout, "")
+        self.assertNotIn("registered:", DATA.stderr)
+        # The provider creates test-new in the account test, so the lookup in other fails after the creation.
+        DATA = self.runCli("init", "new", "test-new", "--create", "--account", "other", expected=1)
+        self.assertEqual(DATA.stdout, "new\tcreated\ttest-new\n")
+        self.assertIn("created: new\nnot registered: new", DATA.stderr)
+
+    def testPartialDomainConfigurationIsRecorded(self):
+        self.runCli("init", "--manifest", "manifest.json")
+        self.Sites[1]["fails"] = "provisionSiteTLSCertificate"
+        (self.Root / "provider.json").write_text(json.dumps(self.Sites))
+        # one was configured and two bound before its certificate failed: the record is a result and the error names both.
+        DATA = self.runCli("domain", "--manifest", "manifest.json", "--https", expected=1)
+        self.assertEqual(DATA.stdout, "one\tbound\tone.example.invalid\none\thttps\tone.example.invalid\n"
+                                      "two\tbound\ttwo.example.invalid\n")
+        self.assertIn("bound: one, two\nhttps: one\nnot configured: two", DATA.stderr)
+        # A failure before any effect is the provider's error alone.
+        self.Sites[1]["fails"] = "updateSite"
+        (self.Root / "provider.json").write_text(json.dumps(self.Sites))
+        DATA = self.runCli("domain", "--manifest", "manifest.json", "--only", "two", expected=1)
+        self.assertEqual(DATA.stdout, "")
+        self.assertNotIn("configured:", DATA.stderr)
 
     def testCreateAndRetargetProtection(self):
         self.runCli("init", "new", "test-new", "--create", "--account", "test")

@@ -220,7 +220,12 @@ the fields, and given together `--quiet` prevails. `check` writes each
 declared check as a progress line on stderr and its closing line on stdout.
 When an upload fails after others completed, stdout keeps the output of the
 completed uploads, and the error, of the class `ngrPartialPublication`, names
-the uploaded and the remaining aliases and exits with status 1.
+the uploaded and the remaining aliases and exits with status 1. When
+`deploy init` or `deploy domain` fails after a completed effect, stdout keeps
+one line per completed effect with its alias, its action (`created` or
+`registered` for init; `cleared`, `bound` or `https` for domain) and its value,
+separated by tabs, and the error names the aliases of each completed action
+and those not registered or not configured, and exits with status 1.
 
 An error is written as `ngr: <message>`; an error without the class
 `moduleFailure` or `moduleUsage` adds the R version and the installed NGR

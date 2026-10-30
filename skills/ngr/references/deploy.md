@@ -76,7 +76,11 @@ instead of silently deleting the binding. If exact local replacement is
 authorized, [unbind](domains-recovery.md#remove-a-local-binding) is the local
 step before registering the intended site.
 
-Creation may succeed before lookup/registry writing fails. Preserve the known
+Creation may succeed before lookup/registry writing fails. A failure after a
+completed creation or registration exits 1: stdout keeps one tab-separated line
+per completed effect, with the alias and `created` with the site name or
+`registered` with the UUID, and the error names those aliases and the ones not
+registered. Preserve the known
 site name/UUID and reconcile it through ordinary init before attempting any
 new creation. A provider lookup error or timeout does not establish absence.
 If NGR does not expose the provider observation needed to reconcile the

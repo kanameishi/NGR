@@ -13,6 +13,14 @@
 #' @return Invisibly, UUIDs named by alias; a dry run returns the requested names.
 #' @details Requires an installed and authenticated Netlify CLI. Batches are
 #'   sequential, not transactions; a later failure retains earlier effects.
+#'   A failure after a completed effect signals a condition of class
+#'   `ngrPartialPublication`, which inherits from `modulePartialPublication` and
+#'   `moduleFailure`: its `effects` holds a data frame with one row per
+#'   completed effect, in order, and the columns `alias`, `action` and `value`,
+#'   where `action` is `created` when the site was created, with the site name
+#'   as `value`, or `registered` when the alias was written to
+#'   `.netlify/sites.env`, with the UUID; its `cause` holds the failure. A
+#'   failure before the first effect reaches the caller unchanged.
 #' @export
 netlifyRegister <- function(alias, site, root = getwd(), create = FALSE,
                             account = NULL, dryRun = FALSE) {
@@ -43,21 +51,30 @@ netlifyRegister <- function(alias, site, root = getwd(), create = FALSE,
       .fail("Alias ", alias[[i]], " already points to ", Current, "; refusing retarget.")
     }
   }
+  Effects <- data.frame(alias = character(), action = character(), value = character())
   for (i in seq_along(alias)) {
-    if (!nzchar(Ids[[i]])) {
-      Args <- c("sites:create", "--manual", "--disable-linking", "--name", site[[i]])
-      if (!is.null(account)) Args <- c(Args, "--account-slug", .netlifyFold(account))
-      .netlifyCommand(Args)
-      Ids[[i]] <- tryCatch({
-        Id <- .findNetlifySite(site[[i]], account = account)
-        .checkNetlifyId(Id)
-        Id
-      }, error = function(e) {
-        .fail("Site creation completed but alias was not registered; reconcile with ngr deploy init ",
-              alias[[i]], " ", site[[i]], ". Cause: ", conditionMessage(e))
-      })
-    }
-    .writeNetlifyAlias(alias[[i]], id = Ids[[i]], registry = Registry)
+    # Earlier effects stay after a later failure; the condition carries them.
+    tryCatch({
+      if (!nzchar(Ids[[i]])) {
+        Args <- c("sites:create", "--manual", "--disable-linking", "--name", site[[i]])
+        if (!is.null(account)) Args <- c(Args, "--account-slug", .netlifyFold(account))
+        .netlifyCommand(Args)
+        Effects[nrow(Effects) + 1L, ] <- list(alias[[i]], "created", site[[i]])
+        Ids[[i]] <- tryCatch({
+          Id <- .findNetlifySite(site[[i]], account = account)
+          .checkNetlifyId(Id)
+          Id
+        }, error = function(e) {
+          .fail("Site creation completed but alias was not registered; reconcile with ngr deploy init ",
+                alias[[i]], " ", site[[i]], ". Cause: ", conditionMessage(e))
+        })
+      }
+      .writeNetlifyAlias(alias[[i]], id = Ids[[i]], registry = Registry)
+      Effects[nrow(Effects) + 1L, ] <- list(alias[[i]], "registered", Ids[[i]])
+    }, error = function(e) {
+      .failPartial(e, effects = Effects, attempt = paste("Registration of", alias[[i]]),
+                   pending = paste("not registered:", paste(alias[seq(i, length(alias))], collapse = ", ")))
+    })
     .inform("moduleNote", alias[[i]], " -> ", Ids[[i]], operation = "deploy", phase = "init", unit = alias[[i]])
   }
   invisible(Ids)
@@ -122,6 +139,15 @@ netlifyDeploy <- function(alias, path, root = getwd(), prod = FALSE, dryRun = FA
 #' @param https Enable HTTPS, including certificate provisioning if needed.
 #' @param rebind Explicitly clear the current custom domain before binding.
 #' @return Invisibly, the provider UUIDs named by alias.
+#' @details Domains are configured in sequence, not as a transaction. A failure
+#'   after a completed effect signals a condition of class
+#'   `ngrPartialPublication`, which inherits from `modulePartialPublication` and
+#'   `moduleFailure`: its `effects` holds a data frame with one row per
+#'   completed effect, in order, and the columns `alias`, `action` and `value`,
+#'   where `action` is `cleared` when `rebind` cleared the current custom
+#'   domain, with the site UUID as `value`, `bound` when the domain was set, or
+#'   `https` when HTTPS was enabled, both with the domain; its `cause` holds the
+#'   failure. A failure before the first effect reaches the caller unchanged.
 #' @export
 netlifyDomain <- function(alias, domain, root = getwd(), https = FALSE,
                           rebind = FALSE, dryRun = FALSE) {
@@ -137,15 +163,29 @@ netlifyDomain <- function(alias, domain, root = getwd(), https = FALSE,
   if (!dryRun && !rebind) {
     for (i in seq_along(alias)) .checkNetlifyDomain(id = Ids[[i]], domain = domain[[i]])
   }
+  Effects <- data.frame(alias = character(), action = character(), value = character())
   for (i in seq_along(alias)) {
     .inform("moduleProgress", alias[[i]], " domain=", domain[[i]], " https=", https, " rebind=", rebind,
             operation = "deploy", phase = "domain", unit = alias[[i]])
     if (dryRun) next
-    if (rebind) .netlifyApi("updateSite", list(site_id = Ids[[i]], body = list(custom_domain = NULL)))
-    .checkNetlifyDomain(id = Ids[[i]], domain = domain[[i]])
-    .netlifyApi("updateSite", list(site_id = Ids[[i]], body = list(custom_domain = domain[[i]])))
-    if (https) .enableNetlifyHttps(Ids[[i]])
-    .checkNetlifyDns(id = Ids[[i]], domain = domain[[i]])
+    # Earlier effects stay after a later failure; the condition carries them.
+    tryCatch({
+      if (rebind) {
+        .netlifyApi("updateSite", list(site_id = Ids[[i]], body = list(custom_domain = NULL)))
+        Effects[nrow(Effects) + 1L, ] <- list(alias[[i]], "cleared", Ids[[i]])
+      }
+      .checkNetlifyDomain(id = Ids[[i]], domain = domain[[i]])
+      .netlifyApi("updateSite", list(site_id = Ids[[i]], body = list(custom_domain = domain[[i]])))
+      Effects[nrow(Effects) + 1L, ] <- list(alias[[i]], "bound", domain[[i]])
+      if (https) {
+        .enableNetlifyHttps(Ids[[i]])
+        Effects[nrow(Effects) + 1L, ] <- list(alias[[i]], "https", domain[[i]])
+      }
+      .checkNetlifyDns(id = Ids[[i]], domain = domain[[i]])
+    }, error = function(e) {
+      .failPartial(e, effects = Effects, attempt = paste("Domain configuration of", alias[[i]]),
+                   pending = paste("not configured:", paste(alias[seq(i, length(alias))], collapse = ", ")))
+    })
   }
   invisible(Ids)
 }
@@ -180,6 +220,21 @@ netlifyUnbind <- function(alias, root = getwd()) {
   for (x in flags) {
     if (!is.logical(x) || length(x) != 1L || is.na(x)) .fail("Netlify flags must be boolean.")
   }
+}
+
+# A failure after a completed effect of a registration or domain batch signals
+# ngrPartialPublication with those effects, one row each; its message names the
+# aliases of each completed action, then the failing alias and those after it.
+# A failure before the first effect reaches the caller unchanged.
+.failPartial <- function(cause, effects, attempt, pending) {
+  if (!nrow(effects)) stop(cause)
+  Done <- vapply(split(effects$alias, factor(effects$action, levels = unique(effects$action))),
+                 paste, character(1L), collapse = ", ")
+  stop(errorCondition(
+    paste0(attempt, " failed after ", nrow(effects), " completed effect(s): ", conditionMessage(cause),
+           paste0("\n", names(Done), ": ", Done, collapse = ""), "\n", pending),
+    class = c("ngrPartialPublication", "modulePartialPublication", "moduleFailure"),
+    effects = effects, cause = cause))
 }
 
 .netlifyFold <- function(x) chartr("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz", x)

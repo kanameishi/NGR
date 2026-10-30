@@ -33,3 +33,14 @@ Invisibly, the provider UUIDs named by alias.
 Checks every current domain before changing any. A different existing domain
 is rejected unless \code{rebind = TRUE}. DNS diagnostics do not change DNS records.
 }
+\details{
+Domains are configured in sequence, not as a transaction. A failure
+after a completed effect signals a condition of class
+\code{ngrPartialPublication}, which inherits from \code{modulePartialPublication} and
+\code{moduleFailure}: its \code{effects} holds a data frame with one row per
+completed effect, in order, and the columns \code{alias}, \code{action} and \code{value},
+where \code{action} is \code{cleared} when \code{rebind} cleared the current custom
+domain, with the site UUID as \code{value}, \code{bound} when the domain was set, or
+\code{https} when HTTPS was enabled, both with the domain; its \code{cause} holds the
+failure. A failure before the first effect reaches the caller unchanged.
+}

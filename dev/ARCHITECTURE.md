@@ -122,6 +122,18 @@ which inherits from `modulePartialPublication`, with the completed uploads in
 the renderer writes the error and exits 1, as the family ruling places the
 record of effects after a partial publication.
 
+`netlifyRegister()` and `netlifyDomain()` keep the same record. The effects of
+`deploy init` are, per alias, the site created when it is missing and
+`--create` is given, and the alias written to `.netlify/sites.env`; those of
+`deploy domain` are the custom domain cleared by `--rebind`, the domain bound
+and HTTPS enabled by `--https`. A failure after one of them signals
+`ngrPartialPublication` with a data frame of the completed effects (`alias`,
+`action`, `value`) in `effects`; the calling handler of `cli/main.R` writes one
+line per effect, separated by tabs as `pull` lists its actions, and the
+renderer writes the error, which names the aliases of each completed action and
+those not registered or not configured, and exits 1. A failure before the first
+effect reaches the renderer unchanged.
+
 `ngr doctor` follows the owner's ruling of 2026-10-25 (AOM
 `dev/ARCHITECTURE.md`, "Doctor diagnoses"): `describeModule()` builds its JSON
 report from the five required checks of the AOM seed and from `optional`,

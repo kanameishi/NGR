@@ -37,4 +37,12 @@ All requested associations are checked before creating or registering sites.
 \details{
 Requires an installed and authenticated Netlify CLI. Batches are
 sequential, not transactions; a later failure retains earlier effects.
+A failure after a completed effect signals a condition of class
+\code{ngrPartialPublication}, which inherits from \code{modulePartialPublication} and
+\code{moduleFailure}: its \code{effects} holds a data frame with one row per
+completed effect, in order, and the columns \code{alias}, \code{action} and \code{value},
+where \code{action} is \code{created} when the site was created, with the site name
+as \code{value}, or \code{registered} when the alias was written to
+\code{.netlify/sites.env}, with the UUID; its \code{cause} holds the failure. A
+failure before the first effect reaches the caller unchanged.
 }
